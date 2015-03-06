@@ -23,8 +23,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A14AE9DF1A036C0400A61B86 /* Tree.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Tree.h; sourceTree = "<group>"; };
+		A1901FEF19F00CAC00EEE3FB /* Syntax.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Syntax.h; sourceTree = "<group>"; };
+		A1AFA3741A2830D000069F4A /* LL1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LL1.h; sourceTree = "<group>"; };
 		A1DB0A0519DD9BA6003B3497 /* translator_cpp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = translator_cpp; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1DB0A0819DD9BA6003B3497 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		A1DB0A0F19DD9BCC003B3497 /* input.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = input.txt; sourceTree = "<group>"; };
+		A1DB0A1019DD9BCC003B3497 /* TemplateIcon2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TemplateIcon2x.png; sourceTree = "<group>"; };
+		A1DB0A1119DD9C6B003B3497 /* defs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = defs.h; sourceTree = "<group>"; };
+		A1DB0A1219DDA1D1003B3497 /* Scanner.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Scanner.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +65,13 @@
 			isa = PBXGroup;
 			children = (
 				A1DB0A0819DD9BA6003B3497 /* main.cpp */,
+				A1DB0A0F19DD9BCC003B3497 /* input.txt */,
+				A1DB0A1019DD9BCC003B3497 /* TemplateIcon2x.png */,
+				A1DB0A1119DD9C6B003B3497 /* defs.h */,
+				A1DB0A1219DDA1D1003B3497 /* Scanner.h */,
+				A1901FEF19F00CAC00EEE3FB /* Syntax.h */,
+				A14AE9DF1A036C0400A61B86 /* Tree.h */,
+				A1AFA3741A2830D000069F4A /* LL1.h */,
 			);
 			path = translator_cpp;
 			sourceTree = "<group>";
@@ -232,6 +246,7 @@
 				A1DB0A0E19DD9BA6003B3497 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

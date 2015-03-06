@@ -1,15 +1,21 @@
-//
-//  main.cpp
-//  translator_cpp
-//
-//  Created by Дмитрий Некрасов on 02.10.14.
-//  Copyright (c) 2014 Дмитрий Некрасов. All rights reserved.
-//
+#include <stdio.h>
+#include "defs.h"
+#include "Scanner.h"
+#include "Syntax.h"
+#include "Tree.h"
+#include "LL1.h"
 
-#include <iostream>
-
-int main(int argc, const char * argv[]) {
-    // insert code here...
-    std::cout << "Hello, World!\n";
+int main() {
+    
+    TSyntax *syntax = new TSyntax(new TScanner("input.txt"));
+    syntax->program();
+    
+    printf("Синтаксических и семантических ошибок не найдено\n");
+    
+//    LL1 *ll1 = new LL1(new TScanner("input.txt"));
+//    ll1->LL_1();
+//    
+//    printf("Синтаксических ошибок не найдено\n");
+    
     return 0;
 }
