@@ -7,10 +7,12 @@
 
 int main() {
     
-    TSyntax *syntax = new TSyntax(new TScanner("input.txt"));
+    TSyntax *syntax = new TSyntax(new TScanner("input.cpp"));
     syntax->program();
     
-    printf("Синтаксических и семантических ошибок не найдено\n");
+    syntax->outTree(false); // true - выводить пустые узлы
+    
+    printf("\nСинтаксических и семантических ошибок не найдено\n");
     
 //    LL1 *ll1 = new LL1(new TScanner("input.txt"));
 //    ll1->LL_1();

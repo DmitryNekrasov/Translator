@@ -92,8 +92,18 @@ public :
         exit(1);
     }
     
-    void printError(char *error, TypeLex lex) {
-        printf("Ошибка! Строка %d, позиция %d: %s ( %s )\n", line, pos, error, lex);
+    void printError(string error, TypeLex lex) {
+        cout << "Ошибка! Строка " << line << ", позиция " << pos << ": " << error << " ( " << lex << " )\n";
+        exit(1);
+    }
+    
+    void printError(string error) {
+        cout << "Ошибка! Строка " << line << ", позиция " << pos << ": " << error << "\n";
+        exit(1);
+    }
+    
+    void printException(string exception, int value) {
+        cout << "Исключение! Строка " << line << ", позиция " << pos << ": " << exception << " ( " << value << " )\n";
         exit(1);
     }
     

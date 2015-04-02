@@ -86,8 +86,10 @@
 #define TypeNodeFunction 3
 
 // Тип данных
-#define TypeDataFloat 0
-#define TypeDataChar 1
+#define TypeDataFloat TFloat
+#define TypeDataChar TChar
+#define TypeDataInt 2
+#define TypeDataBool 3
 
 // Нетерминалы
 #define netermProgram 100
@@ -136,8 +138,14 @@ typedef char TypeMod[MAX_TEXT];
 typedef char TypeLex[MAX_LEX];
 
 union DataValue {
+    bool dataAsBool;
+    bool *arrayDataAsBool;
+    int dataAsInt;
+    int *arrayDataAsInt;
     float dataAsFloat;
+    float *arrayDataAsFloat;
     char dataAsChar;
+    char *arrayDataAsChar;
 };
 
 using namespace std;

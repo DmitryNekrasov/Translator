@@ -16,10 +16,11 @@ struct Node {
     
     int typeNode; // пустой, переменная, массив, функция
     TypeLex id;
-    int typeData; // float, char
+    int typeData; // тип (float, char)
     DataValue dataValue; // значение
     
     int sizeArray;
+    int startFunction; // начало тела функции
     
     Node() {}
     Node(int _typeNode) {
@@ -30,10 +31,11 @@ struct Node {
 
 class Tree {
 private :
-    Node *node; // данные таблицы
-    Tree *up, *left, *right; // родитель, левый и правый потомок
     
 public :
+    
+    Node *node; // данные таблицы
+    Tree *up, *left, *right; // родитель, левый и правый потомок
     
     static Tree *cur; // текущий элемент дерева
     
@@ -103,23 +105,64 @@ public :
         return NULL;
     }
     
-    void printTree() { // отладочная программа печати дерева
-        printf("Вершина с данными %s ---> ", node->id);
-        if (left != NULL) {
-            printf("слева данные %s", left->node->id);
-            if (left->node->typeNode == TypeNodeArray)
-                printf(" (размер массива %d)", left->node->sizeArray);
+    void printTree(bool printEmpty) { // отладочная программа печати дерева
+        
+        if (printEmpty || node->typeNode != TypeNodeEmpty) {
+        
+            printf("Вершина с данными %s ", node->id);
+            
+            if (node->typeNode == TypeNodeVar || node->typeNode == TypeNodeFunction) {
+                printf("(значение ");
+                switch (node->typeData) {
+                    case TypeDataChar : printf("%d '%c'", node->dataValue.dataAsChar, node->dataValue.dataAsChar); break;
+                    case TypeDataFloat : printf("%f", node->dataValue.dataAsFloat); break;
+                }
+                printf(") ");
+            }
+            
+            if (node->typeNode == TypeNodeArray) {
+                printf("(размер массива %d) [", node->sizeArray);
+                switch (node->typeData) {
+                    case TypeDataChar :
+                        for (int i = 0; i < node->sizeArray - 1; i++)
+                            printf("%d, ", node->dataValue.arrayDataAsChar[i]);
+                        printf("%d", node->dataValue.arrayDataAsChar[node->sizeArray - 1]);
+                        
+                        printf("] [");
+                        for (int i = 0; i < node->sizeArray - 1; i++)
+                            printf("'%c', ", node->dataValue.arrayDataAsChar[i]);
+                        printf("'%c'", node->dataValue.arrayDataAsChar[node->sizeArray - 1]);
+                        
+                        break;
+                        
+                    case TypeDataFloat :
+                        for (int i = 0; i < node->sizeArray - 1; i++)
+                            printf("%f, ", node->dataValue.arrayDataAsFloat[i]);
+                        printf("%f", node->dataValue.arrayDataAsFloat[node->sizeArray - 1]);
+                        break;
+                }
+                printf("] ");
+            }
+            
+            if (printEmpty) {
+                printf("---> ");
+                
+                if (left != NULL) {
+                    printf("слева данные %s", left->node->id);
+                }
+                if (right != NULL) {
+                    printf(" справа данные %s", right->node->id);
+                }
+            }
+            
+            printf("\n");
+            
         }
-        if (right != NULL) {
-            printf(" справа данные %s", right->node->id);
-            if (right->node->typeNode == TypeNodeArray)
-                printf(" (размер массива %d)", right->node->sizeArray);
-        }
-        printf("\n");
+        
         if (left != NULL)
-            left->printTree();
+            left->printTree(printEmpty);
         if (right != NULL)
-            right->printTree();
+            right->printTree(printEmpty);
     }
     
     
