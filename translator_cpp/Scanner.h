@@ -86,7 +86,7 @@ public :
             } break;
                 
             case ELongStringConst : {
-                printf("Слишком длянная строковая константа.\n");
+                printf("Слишком длинная строковая константа.\n");
             } break;
         }
         exit(1);
