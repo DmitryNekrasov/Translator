@@ -2,12 +2,12 @@ char cnt = 8;
 
 float f1() {
     return 100;
-};
+}
 
 float f() {
     cnt = 7 * 2;
     return f1() + cnt;
-};
+}
 
 char t = 88;
 
@@ -30,4 +30,4 @@ char main() {
     
     char magic = f();
     
-};
+}

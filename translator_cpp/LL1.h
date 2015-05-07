@@ -19,6 +19,98 @@ private :
     
 public :
     
+    string codeToString(int code) {
+        string str;
+        
+        switch(code) {
+            case netermProgram: str = "Program"; break;
+            case netermI: str = "I"; break;
+            case netermJ: str = "J"; break;
+            case netermType: str = "Type"; break;
+            case netermListVar: str = "ListVar"; break;
+            case netermH: str = "H"; break;
+            case netermListItem: str = "ListItem"; break;
+            case netermE: str = "E"; break;
+            case netermF: str = "F"; break;
+            case netermG: str = "G"; break;
+            case netermConstSeq: str = "ConstSeq"; break;
+            case netermK: str = "K"; break;
+            case netermFunctionName: str = "FunctionName"; break;
+            case neterm: str = "neterm"; break;
+            case netermBlock: str = "Block"; break;
+            case netermOperators: str = "Operators"; break;
+            case netermOneOperator: str = "OneOperator"; break;
+            case netermD: str = "D"; break;
+            case netermAssignment: str = "Assignment"; break;
+            case netermItemForAssignment: str = "ItemForAssignment"; break;
+            case netermExpression: str = "Expression"; break;
+            case netermA1: str = "A1"; break;
+            case netermA11: str = "A11"; break;
+            case netermA111: str = "A111"; break;
+            case netermA2: str = "A2"; break;
+            case netermA21: str = "A21"; break;
+            case netermA211: str = "A211"; break;
+            case netermA3: str = "A3"; break;
+            case netermA31: str = "A31"; break;
+            case netermA311: str = "A311"; break;
+            case netermA4: str = "A4"; break;
+            case netermA511: str = "A511"; break;
+            case netermA512: str = "A512"; break;
+            case netermA5: str = "A5"; break;
+            case netermOperand: str = "Operand"; break;
+            case netermB: str = "B"; break;
+            case netermC: str = "C"; break;
+            case netermConst: str = "Const"; break;
+            case netermDoWhile: str = "DoWhile"; break;
+            case netermReturn: str = "Return"; break;
+            case netermFunctionCall: str = "FunctionCall"; break;
+                
+            case TId: str = "id"; break;
+            case TConstInt: str = "constInt"; break;
+            case TConstChar: str = "constChar"; break;
+            case TConstString: str = "constString"; break;
+                
+            case TPlus: str = "+"; break;
+            case TMinus: str = "-"; break;
+            case TMultiply: str = "*"; break;
+            case TDiv: str = "/"; break;
+            case TMod: str = "%"; break;
+            case TAssignment: str = "="; break;
+            case TPlusPlus: str = "++"; break;
+            case TMinusMinus: str = "--"; break;
+            case TMore: str = ">"; break;
+            case TLess: str = "<"; break;
+            case TMoreOrEquals: str = ">="; break;
+            case TLessOrEquals: str = "<="; break;
+            case TEquals: str = "=="; break;
+            case TNoEquals: str = "!="; break;
+                
+            case TOpenRoundBracket: str = "("; break;
+            case TCloseRoundBracket: str = ")"; break;
+            case TOpenCurlyBracket: str = "{"; break;
+            case TCloseCurlyBracket: str = "}"; break;
+            case TOpenSquareBracket: str = "["; break;
+            case TCloseSquareBracket: str = "]"; break;
+                
+            case TSemicolon: str = ";"; break;
+            case TComma: str = ","; break;
+                
+            case TFloat: str = "float"; break;
+            case TChar: str = "char"; break;
+            case TDo: str = "do"; break;
+            case TWhile: str = "while"; break;
+            case TMain: str = "main"; break;
+            case TReturn: str = "return"; break;
+                
+            case TError: str = "TError"; break;
+            case TEnd: str = "TEnd"; break;
+                
+            default: str = "HZ";
+        }
+        
+        return str;
+    }
+    
     bool isTerminal(int t) {
         if (t < netermProgram)
             return true;
@@ -26,6 +118,12 @@ public :
     }
     
     void outMag() {
+        for (int i = 0; i <= z; i++)
+            cout << codeToString(mag[i]) << " | ";
+        cout << "ENDSTACK\n";
+    }
+    
+    void outMagInt() {
         for (int i = 0; i <= z; i++)
             printf("%3d ", mag[i]);
         printf("∆\n");
