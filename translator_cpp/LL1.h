@@ -27,6 +27,8 @@ private :
     TypeLex currentConst;  // последняя отсканированная константа
     int currentConstType;  // тип последней отсканированной константы
     
+    int countElements = 0;  // текущее количество перечисляемых констант при присваивании в массив
+    
 public :
     
     string codeToString(int code) {
@@ -336,9 +338,11 @@ public :
                             mag[z++] = DELTA6;
                             mag[z++] = TConstString;
                         } else if (t == TOpenCurlyBracket) {
+                            mag[z++] = DELTA8;
                             mag[z++] = TCloseCurlyBracket;
                             mag[z++] = netermConstSeq;
                             mag[z++] = TOpenCurlyBracket;
+                            mag[z++] = DELTA7;
                         } else {
                             sc->printError("неверный символ", lex);
                             return -1;
@@ -349,6 +353,7 @@ public :
                         if (t == TConstInt || t == TConstChar) {
                             mag[z++] = netermK;
                             mag[z++] = netermConst;
+                            mag[z++] = DELTA10;
                         } else {
                             sc->printError("неверный символ", lex);
                             return -1;
@@ -727,8 +732,7 @@ public :
             }
                 
             case DELTA4: {
-                int sizeArray = root->getSizeArray(currentConstType, currentConst);
-                Tree::cur->node->sizeArray = sizeArray;
+                Tree::cur->node->sizeArray = root->getSizeArray(currentConstType, currentConst);
                 break;
             }
                 
@@ -739,6 +743,21 @@ public :
                 
             case DELTA6: {
                 root->controlStringConst(Tree::cur, currentConst, sc);
+                break;
+            }
+                
+            case DELTA7: {
+                countElements = 0;
+                break;
+            }
+                
+            case DELTA10: {
+                countElements++;
+                break;
+            }
+                
+            case DELTA8: {
+                root->controlCountElements(Tree::cur, countElements, sc);
                 break;
             }
                 
