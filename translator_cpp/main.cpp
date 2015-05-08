@@ -18,7 +18,7 @@ int main() {
     ll1->LL_1();
     
     cout << "\nДерево:\n";
-    ll1->outTree(true);
+    ll1->outTree();
     
     printf("\nСинтаксических ошибок не найдено\n");
     

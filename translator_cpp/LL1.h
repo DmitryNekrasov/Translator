@@ -15,7 +15,9 @@
 class LL1 {
 private : 
     int mag[MAX_LEN_MAG], z = 0;  // магазин и указатель магазина
-    int treePointers[MAX_LEN_MAG], tpz = 0;  // стек указателей на вершины семантического дерева и указатель стека
+    
+    Tree* treePointers[MAX_LEN_MAG];  // стек указателей на вершины семантического дерева
+    int tpz = 0;  // указатель стека
     
     TScanner *sc;
     Tree *root;  // корень семантического дерева
@@ -159,14 +161,15 @@ public :
     
     // обновляем текущий тип и идентификатор, если надо
     void getCurrents(int t, TypeLex lex) {
+        
         if (t == TChar || t == TFloat) {
             currentType = t;
-            cout << currentType << " ";
+//            cout << currentType << " ";
         }
         
         if (t == TId || t == TMain) {
             strcpy(currentId, lex);
-            cout << currentId << "\n\n";
+//            cout << currentId << "\n\n";
         }
     }
     
@@ -184,7 +187,7 @@ public :
             if (z == -1)
                 break;
             
-//            outMag();
+            outMag();
             
             if (isTerminal(mag[z])) {
                 
@@ -674,11 +677,61 @@ public :
     }
     
     void processingDelta() {
+        
+        switch (mag[z]) {
+                
+            case 1:
+                break;
+                
+            case DELTA1_VAR: {
+                Tree *v = root->semInclude(currentId, TypeNodeVar, currentType, sc);
+                break;
+            }
+                
+            case DELTA1_FUNCTION: {
+                Tree *v = root->semInclude(currentId, TypeNodeFunction, currentType, sc);
+                treePointers[tpz++] = v;
+                break;
+            }
+                
+            case DELTA1_ARRAY: {
+                Tree *v = root->semInclude(currentId, TypeNodeArray, currentType, sc);
+                break;
+            }
+                
+            case DELTA9: {
+                Tree::cur = treePointers[--tpz];
+                break;
+            }
+                
+            case DELTA2_LEFT: {
+                Tree *v = root->semIncludeBlock();
+                treePointers[tpz++] = v;
+                break;
+            }
+                
+            case DELTA3_VAR: {
+                root->semGetType(currentId, sc);
+                break;
+            }
+                
+            case DELTA3_FUNCTION: {
+                root->semGetFunc(currentId, sc);
+                break;
+            }
+                
+            case DELTA3_ARRAY: {
+                root->semGetArray(currentId, sc);
+                break;
+            }
+                
+        }
+        
         z--;
     }
     
-    void outTree(bool printEmpty) {
-        root->printTree(printEmpty);
+    void outTree() {
+        root->printTree();
     }
     
     LL1(TScanner *s) {

@@ -105,7 +105,7 @@ public :
         return NULL;
     }
     
-    void printTree(bool printEmpty) { // отладочная программа печати дерева
+    void printTree(bool printEmpty) { // отладочная программа печати дерева для интерпретатора
         
         if (printEmpty || node->typeNode != TypeNodeEmpty) {
         
@@ -163,6 +163,31 @@ public :
             left->printTree(printEmpty);
         if (right != NULL)
             right->printTree(printEmpty);
+    }
+    
+    void printTree() { // отладочная программа печати дерева
+        
+        printf("Вершина с данными %s ", node->id);
+        
+        if (node->typeNode == TypeNodeArray) {
+            printf("(размер массива %d) [", node->sizeArray);
+        }
+    
+        printf("---> ");
+        
+        if (left != NULL) {
+            printf("слева данные %s", left->node->id);
+        }
+        if (right != NULL) {
+            printf(" справа данные %s", right->node->id);
+        }
+        
+        printf("\n");
+        
+        if (left != NULL)
+            left->printTree();
+        if (right != NULL)
+            right->printTree();
     }
     
     
