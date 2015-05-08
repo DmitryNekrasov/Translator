@@ -4,7 +4,7 @@ float f1() {
 
 char main() {
     char a, b, c = 7, arr[8];
-    char aa[3] = "qqq";
+    char aa[5] = "qwer";
     
     a = 1 + arr[1] + f1() + b;
     

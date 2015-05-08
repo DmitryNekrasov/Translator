@@ -170,7 +170,7 @@ public :
             strcpy(currentId, lex);
         }
         
-        if (t == TConstChar || t == TConstInt) {
+        if (t == TConstChar || t == TConstInt || t == TConstString) {
             strcpy(currentConst, lex);
             currentConstType = t;
         }
@@ -333,6 +333,7 @@ public :
                         
                     case netermG :
                         if (t == TConstString) {
+                            mag[z++] = DELTA6;
                             mag[z++] = TConstString;
                         } else if (t == TOpenCurlyBracket) {
                             mag[z++] = TCloseCurlyBracket;
@@ -733,6 +734,11 @@ public :
                 
             case DELTA5: {
                 root->controlFloatArrayAssignment(sc);
+                break;
+            }
+                
+            case DELTA6: {
+                root->controlStringConst(Tree::cur, currentConst, sc);
                 break;
             }
                 

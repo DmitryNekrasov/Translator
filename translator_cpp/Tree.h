@@ -303,7 +303,7 @@ public :
     
     void controlFloatArrayAssignment(TScanner *sc) {
         if (cur->node->typeData == TFloat) {
-            sc->printError("нельзя присвваивать в массив типа float");
+            sc->printError("нельзя присваивать в массив типа float при инициализации");
         }
     }
     
