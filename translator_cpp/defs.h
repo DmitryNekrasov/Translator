@@ -84,6 +84,7 @@
 #define TypeNodeVar 1
 #define TypeNodeArray 2
 #define TypeNodeFunction 3
+#define TypeNodeHZ 4
 
 // Тип данных
 #define TypeDataFloat TFloat
@@ -133,6 +134,33 @@
 #define netermDoWhile 138
 #define netermReturn 139
 #define netermFunctionCall 140
+
+
+// Дельты
+
+// записать в дерево функцию/переменную/массив
+#define DELTA1_FUNCTION -101
+#define DELTA1_VAR -102
+#define DELTA1_ARRAY -103
+
+// добавить в дерево пустую левую/правую вершину
+#define DELTA2_LEFT -110
+#define DELTA2_RIGHT -111
+
+// найти в дереве функцию/переменную/массив
+#define DELTA3_FUNCTION -120
+#define DELTA3_VAR -121
+#define DELTA3_ARRAY -122
+
+// дописать в узел информацию о размере массива
+#define DELTA4 -130
+
+// записать в стек указатель на текущий узел
+#define DELTA8 -140
+
+// восстановить указатель на вершину - достать его из стека
+#define DELTA9 -150
+
 
 typedef char TypeMod[MAX_TEXT];
 typedef char TypeLex[MAX_LEX];

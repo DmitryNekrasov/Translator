@@ -17,7 +17,7 @@ int main() {
     LL1 *ll1 = new LL1(new TScanner("input.cpp"));
     ll1->LL_1();
     
-    printf("Синтаксических ошибок не найдено\n");
+    printf("\nСинтаксических ошибок не найдено\n");
     
     return 0;
 }

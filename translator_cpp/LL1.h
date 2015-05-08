@@ -105,6 +105,18 @@ public :
             case TError: str = "TError"; break;
             case TEnd: str = "TEnd"; break;
                 
+            case DELTA1_FUNCTION: str = "∆1_FUNCTION"; break;
+            case DELTA1_VAR: str = "∆1_VAR"; break;
+            case DELTA1_ARRAY: str = "∆1_ARRAY"; break;
+            case DELTA2_LEFT: str = "∆2_LEFT"; break;
+            case DELTA2_RIGHT: str = "∆2_RIGHT"; break;
+            case DELTA3_FUNCTION: str = "∆3_FUNCTION"; break;
+            case DELTA3_VAR: str = "∆3_VAR"; break;
+            case DELTA3_ARRAY: str = "∆3_ARRAY"; break;
+            case DELTA4: str = "∆4"; break;
+            case DELTA8: str = "∆8"; break;
+            case DELTA9: str = "∆9"; break;
+                
             default: str = "HZ";
         }
         
@@ -112,7 +124,7 @@ public :
     }
     
     bool isTerminal(int t) {
-        if (t < netermProgram)
+        if (t < netermProgram && t >= 0)
             return true;
         return false;
     }
@@ -184,9 +196,13 @@ public :
                             mag[z++] = netermJ;
                             mag[z++] = TId;
                         } else if (t == TMain) {
+                            mag[z++] = DELTA9;
                             mag[z++] = netermBlock;
                             mag[z++] = TCloseRoundBracket;
                             mag[z++] = TOpenRoundBracket;
+                            mag[z++] = DELTA2_RIGHT;
+                            mag[z++] = DELTA8;
+                            mag[z++] = DELTA1_FUNCTION;
                             mag[z++] = TMain;
                         } else {
                             sc->printError("неверный символ", lex);
@@ -196,9 +212,13 @@ public :
                         
                     case netermJ :
                         if (t == TOpenRoundBracket) {
+                            mag[z++] = DELTA9;
                             mag[z++] = netermBlock;
                             mag[z++] = TCloseRoundBracket;
                             mag[z++] = TOpenRoundBracket;
+                            mag[z++] = DELTA2_RIGHT;
+                            mag[z++] = DELTA8;
+                            mag[z++] = DELTA1_FUNCTION;
                         } else {
                             mag[z++] = TSemicolon;
                             mag[z++] = netermH;
@@ -251,12 +271,15 @@ public :
                         if (t == TAssignment) {
                             mag[z++] = netermExpression;
                             mag[z++] = TAssignment;
+                            mag[z++] = DELTA1_VAR;
                         } else if (t == TOpenSquareBracket) {
                             mag[z++] = netermF;
                             mag[z++] = TCloseSquareBracket;
                             mag[z++] = netermConst;
                             mag[z++] = TOpenSquareBracket;
+                            mag[z++] = DELTA1_ARRAY;
                         } else {
+                            mag[z++] = DELTA1_VAR;
                             epsilon();
                         }
                         break;
@@ -304,8 +327,10 @@ public :
                         
                     case netermFunctionName :
                         if (t == TId) {
+                            mag[z++] = DELTA3_FUNCTION;
                             mag[z++] = TId;
                         } else if (t == TMain) {
+                            mag[z++] = DELTA3_FUNCTION;
                             mag[z++] = TMain;
                         } else {
                             sc->printError("неверный символ", lex);
@@ -315,9 +340,13 @@ public :
                         
                     case netermBlock :
                         if (t == TOpenCurlyBracket) {
+                            mag[z++] = DELTA9;
                             mag[z++] = TCloseCurlyBracket;
                             mag[z++] = netermOperators;
                             mag[z++] = TOpenCurlyBracket;
+                            mag[z++] = DELTA2_RIGHT;
+                            mag[z++] = DELTA8;
+                            mag[z++] = DELTA2_LEFT;
                         } else {
                             sc->printError("неверный символ", lex);
                             return -1;
@@ -345,6 +374,7 @@ public :
                         } else if (t == TMain) {
                             mag[z++] = TCloseRoundBracket;
                             mag[z++] = TOpenRoundBracket;
+                            mag[z++] = DELTA3_FUNCTION;
                             mag[z++] = TMain;
                         } else if (t == TDo) {
                             mag[z++] = netermDoWhile;
@@ -364,6 +394,7 @@ public :
                         if (t == TOpenRoundBracket) {
                             mag[z++] = TCloseRoundBracket;
                             mag[z++] = TOpenRoundBracket;
+                            mag[z++] = DELTA3_FUNCTION;
                         } else {
                             mag[z++] = netermExpression;
                             mag[z++] = TAssignment;
@@ -541,6 +572,7 @@ public :
                         } else if (t == TMain) {
                             mag[z++] = TCloseRoundBracket;
                             mag[z++] = TOpenRoundBracket;
+                            mag[z++] = DELTA3_FUNCTION;
                             mag[z++] = TMain;
                         } else {
                             mag[z++] = netermConst;
@@ -552,7 +584,9 @@ public :
                             mag[z++] = TCloseSquareBracket;
                             mag[z++] = netermExpression;
                             mag[z++] = TOpenSquareBracket;
+                            mag[z++] = DELTA3_ARRAY;
                         } else {
+                            mag[z++] = DELTA3_VAR;
                             epsilon();
                         }
                         break;
@@ -561,6 +595,7 @@ public :
                         if (t == TOpenRoundBracket) {
                             mag[z++] = TCloseRoundBracket;
                             mag[z++] = TOpenRoundBracket;
+                            mag[z++] = DELTA3_FUNCTION;
                         } else {
                             mag[z++] = netermB;
                         }
