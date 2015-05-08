@@ -1078,7 +1078,7 @@ public :
             }
         }
         
-        return getSizeArray(t, lex);
+        return root->getSizeArray(t, lex);
     }
     
     
@@ -1377,28 +1377,6 @@ public :
         }
         sc->setUK(tmpUk);
         
-    }
-    
-    int getSizeArray(int t, TypeLex lex) {
-        if (t == TConstInt)
-            return stringToInt(lex);
-        return charToInt(lex);
-    }
-    
-    int stringToInt(TypeLex str) {
-        size_t len = strlen(str);
-        int ans = 0;
-        int p = 1;
-        for (size_t i = len; i ; i--) {
-            int q = (str[i - 1] - '0') * p;
-            ans += q;
-            p *= 10;
-        }
-        return ans;
-    }
-    
-    int charToInt(TypeLex str) {
-        return str[1];
     }
     
     void outTree(bool printEmpty) {

@@ -170,7 +170,7 @@ public :
         printf("Вершина с данными %s ", node->id);
         
         if (node->typeNode == TypeNodeArray) {
-            printf("(размер массива %d) [", node->sizeArray);
+            printf("(размер массива %d) ", node->sizeArray);
         }
     
         printf("---> ");
@@ -299,6 +299,31 @@ public :
         if (v->node->typeNode != TypeNodeFunction)
             sc->printError("не является функцией идентификатор", a);
         return v;
+    }
+    
+    int getSizeArray(int t, TypeLex lex) {
+        int sizeArray;
+        if (t == TConstInt)
+            sizeArray = stringToInt(lex);
+        else
+            sizeArray = charToInt(lex);
+        return sizeArray;
+    }
+    
+    int stringToInt(TypeLex str) {
+        size_t len = strlen(str);
+        int ans = 0;
+        int p = 1;
+        for (size_t i = len; i ; i--) {
+            int q = (str[i - 1] - '0') * p;
+            ans += q;
+            p *= 10;
+        }
+        return ans;
+    }
+    
+    int charToInt(TypeLex str) {
+        return str[1];
     }
     
 };

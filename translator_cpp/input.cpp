@@ -1,7 +1,11 @@
+float f1() {
+    return 1;
+}
+
 char main() {
-    char a, b, c = 7, arr[4];
+    char a, b, c = 7, arr[8];
     
-    a = 1 + arr[1];
+    a = 1 + arr[1] + f1() + b;
     
     do {
         char q = 8;
@@ -10,7 +14,7 @@ char main() {
     float z = 3;
 }
 
-float f1() {
+float f2() {
     char a;
     return 1;
 }
