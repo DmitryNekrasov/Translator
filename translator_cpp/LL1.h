@@ -14,8 +14,14 @@
 
 class LL1 {
 private : 
-    int mag[MAX_LEN_MAG], z = 0; // магазин и указатель магазина
+    int mag[MAX_LEN_MAG], z = 0;  // магазин и указатель магазина
+    int treePointers[MAX_LEN_MAG], tpz = 0;  // стек указателей на вершины семантического дерева и указатель стека
+    
     TScanner *sc;
+    Tree *root;  // корень семантического дерева
+    
+    int currentType;  // последний отсканированный тип
+    TypeLex currentId;  // посдедний отсканированный идентификатор
     
 public :
     
@@ -123,6 +129,12 @@ public :
         return str;
     }
     
+    bool isDelta(int t) {
+        if (t <= DELTA1_FUNCTION)
+            return true;
+        return false;
+    }
+    
     bool isTerminal(int t) {
         if (t < netermProgram && t >= 0)
             return true;
@@ -132,7 +144,7 @@ public :
     void outMag() {
         for (int i = 0; i <= z; i++)
             cout << codeToString(mag[i]) << " | ";
-        cout << "ENDSTACK\n";
+        cout << "\n";
     }
     
     void outMagInt() {
@@ -145,6 +157,19 @@ public :
 //        z--;
     }
     
+    // обновляем текущий тип и идентификатор, если надо
+    void getCurrents(int t, TypeLex lex) {
+        if (t == TChar || t == TFloat) {
+            currentType = t;
+            cout << currentType << " ";
+        }
+        
+        if (t == TId || t == TMain) {
+            strcpy(currentId, lex);
+            cout << currentId << "\n\n";
+        }
+    }
+    
     int LL_1() {
         int t;
         TypeLex lex;
@@ -152,13 +177,14 @@ public :
         
         mag[z] = netermProgram;
         t = sc->Scanner(lex);
+        getCurrents(t, lex);
         
         while (flag) {
             
             if (z == -1)
                 break;
             
-            outMag();
+//            outMag();
             
             if (isTerminal(mag[z])) {
                 
@@ -169,12 +195,16 @@ public :
                         flag = 0;
                     else {
                         t = sc->Scanner(lex); // сканируем новый символ
+                        getCurrents(t, lex);
+                        
                         z--; // стираем верхушку магазина
                     }
                 } else {
                     sc->printError("неверный символ", lex);
                     return -1;
                 }
+            } else if (isDelta(mag[z])) {
+                processingDelta();
             } else {
                 
                 // в верхушке магазина нетерминал
@@ -643,9 +673,20 @@ public :
         return 1; // нормальный выход
     }
     
+    void processingDelta() {
+        z--;
+    }
+    
+    void outTree(bool printEmpty) {
+        root->printTree(printEmpty);
+    }
     
     LL1(TScanner *s) {
         sc = s;
+        Node *node = new Node();
+        strcpy(node->id, "###");
+        root = new Tree(NULL, NULL, NULL, node);
+        Tree::cur = root;
     }
     
     ~LL1() {};
