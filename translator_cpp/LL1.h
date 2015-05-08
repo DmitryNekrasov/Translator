@@ -210,7 +210,11 @@ public :
                     return -1;
                 }
             } else if (isDelta(mag[z])) {
+                
+                // в верхушке магазина дельта
+                
                 processingDelta();
+                
             } else {
                 
                 // в верхушке магазина нетерминал
@@ -321,6 +325,7 @@ public :
                         if (t == TAssignment) {
                             mag[z++] = netermG;
                             mag[z++] = TAssignment;
+                            mag[z++] = DELTA5;
                         } else {
                             epsilon();
                         }
@@ -723,6 +728,11 @@ public :
             case DELTA4: {
                 int sizeArray = root->getSizeArray(currentConstType, currentConst);
                 Tree::cur->node->sizeArray = sizeArray;
+                break;
+            }
+                
+            case DELTA5: {
+                root->controlFloatArrayAssignment(sc);
                 break;
             }
                 

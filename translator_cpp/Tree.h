@@ -301,6 +301,12 @@ public :
         return v;
     }
     
+    void controlFloatArrayAssignment(TScanner *sc) {
+        if (cur->node->typeData == TFloat) {
+            sc->printError("нельзя присвваивать в массив типа float");
+        }
+    }
+    
     int getSizeArray(int t, TypeLex lex) {
         int sizeArray;
         if (t == TConstInt)

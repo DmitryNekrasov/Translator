@@ -138,23 +138,26 @@
 // Дельты
 
 // записать в дерево функцию/переменную/массив
-#define DELTA1_FUNCTION -101 //
-#define DELTA1_VAR -102 //
-#define DELTA1_ARRAY -103 //
+#define DELTA1_FUNCTION -101
+#define DELTA1_VAR -102
+#define DELTA1_ARRAY -103
 
 // добавить в дерево 2 пустые вершины (левую и правую) для блока
-#define DELTA2_BLOCK -110 //
+#define DELTA2_BLOCK -110
 
 // найти в дереве функцию/переменную/массив
-#define DELTA3_FUNCTION -120 //
-#define DELTA3_VAR -121 //
-#define DELTA3_ARRAY -122 //
+#define DELTA3_FUNCTION -120
+#define DELTA3_VAR -121
+#define DELTA3_ARRAY -122
 
 // дописать в узел информацию о размере массива
-#define DELTA4 -130 //
+#define DELTA4 -130
+
+// проверить тип данных в текущем узле дерева, и, если float, выдать ошибку
+#define DELTA5 -140
 
 // восстановить указатель на вершину - достать его из стека
-#define DELTA9 -150 //
+#define DELTA9 -150
 
 
 typedef char TypeMod[MAX_TEXT];
