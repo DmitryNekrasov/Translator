@@ -174,6 +174,7 @@ public :
             case DELTA_GEN_ASSIGNMENT: str = "∆="; break;
             case DELTA_GEN_CMP: str = "∆cmp"; break;
             case DELTA_GEN_INDEX: str = "∆index"; break;
+            case DELTA_GEN_CALL: str = "∆call"; break;
                 
             case DELTA_WRITE_CONST: str = "∆wConst"; break;
             case DELTA_WRITE_MINUS_ONE: str = "∆w-1"; break;
@@ -203,6 +204,7 @@ public :
             case TRI_ASSIGNMENT: str = "="; break;
             case TRI_CMP: str = "cmp"; break;
             case TRI_INDEX: str = "index"; break;
+            case TRI_CALL: str = "call"; break;
                 
             default: str = "^_^";
         }
@@ -269,6 +271,7 @@ public :
         while (flag) {
             
             outMag();
+//            outOperands();
             
             if (isTerminal(mag[z])) {
                 
@@ -716,6 +719,7 @@ public :
                             mag[z++] = netermC;
                             mag[z++] = TId;
                         } else if (t == TMain) {
+                            mag[z++] = DELTA_GEN_CALL;
                             mag[z++] = TCloseRoundBracket;
                             mag[z++] = TOpenRoundBracket;
                             mag[z++] = DELTA3_FUNCTION;
@@ -741,6 +745,7 @@ public :
                         
                     case netermC :
                         if (t == TOpenRoundBracket) {
+                            mag[z++] = DELTA_GEN_CALL;
                             mag[z++] = TCloseRoundBracket;
                             mag[z++] = TOpenRoundBracket;
                             mag[z++] = DELTA3_FUNCTION;
@@ -777,6 +782,7 @@ public :
                         break;
                         
                     case netermFunctionCall :
+                        mag[z++] = DELTA_GEN_CALL;
                         mag[z++] = TCloseRoundBracket;
                         mag[z++] = TOpenRoundBracket;
                         mag[z++] = netermFunctionName;
@@ -794,8 +800,9 @@ public :
     void outOperands() {
         for (int i = 0; i < oz; i++) {
             outOneOperand(operands[i]);
-            cout << "\n";
+            cout << " ";
         }
+        cout << "\n";
     }
     
     void outOneOperand(Operand* operand) {
@@ -861,6 +868,7 @@ public :
                 
             case DELTA3_FUNCTION: {
                 root->semGetFunc(currentId, sc);
+                operands[oz++] = new Operand(TYPE_IS_OPERAND, currentId);
                 break;
             }
                 
@@ -940,6 +948,14 @@ public :
                 
             case DELTA_GEN_INDEX: {
                 generateArithmeticTriad(TRI_INDEX);
+                break;
+            }
+                
+            case DELTA_GEN_CALL: {
+                Operand* operand = operands[--oz];
+                Triad *triad = new Triad(TRI_CALL, operand, new Operand(TYPE_IS_OPERAND, ""));
+                triads[tz++] = triad;
+                operands[oz++] = new Operand(TYPE_IS_ADRESS, tz - 1);
                 break;
             }
                 

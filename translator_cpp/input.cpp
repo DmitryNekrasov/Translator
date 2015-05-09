@@ -1,4 +1,7 @@
-char mail() {
+float f1() {
+}
+
+char main() {
     char a, b, c[8] = "111", d;
-    char z = c[1 + 2] + 8;
+    char z = a - f1();
 }
