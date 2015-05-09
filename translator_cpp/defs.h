@@ -193,6 +193,7 @@
 #define DELTA_GEN_MINUS -200
 #define DELTA_GEN_ASSIGNMENT -210
 #define DELTA_GEN_CMP -220
+#define DELTA_GEN_INDEX -230
 
 // дельты записи в стек операндов (R)
 #define DELTA_WRITE_CONST -500
@@ -222,6 +223,7 @@
 #define TRI_MOD 2400
 #define TRI_ASSIGNMENT 2500
 #define TRI_CMP 2600
+#define TRI_INDEX 2700
 
 
 typedef char TypeMod[MAX_TEXT];

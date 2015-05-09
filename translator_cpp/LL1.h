@@ -173,11 +173,16 @@ public :
             case DELTA_GEN_MINUS: str = "∆-"; break;
             case DELTA_GEN_ASSIGNMENT: str = "∆="; break;
             case DELTA_GEN_CMP: str = "∆cmp"; break;
+            case DELTA_GEN_INDEX: str = "∆index"; break;
                 
             case DELTA_WRITE_CONST: str = "∆wConst"; break;
             case DELTA_WRITE_MINUS_ONE: str = "∆w-1"; break;
             case DELTA_WRITE_TOP: str = "∆wTop"; break;
             case DELTA_WRITE_ONE: str = "∆w1"; break;
+            case DELTA_WRITE_ZERO: str = "∆w0"; break;
+                
+            case DELTA_REVERSE_LAST_TWO: str = "∆reverse"; break;
+            case DELTA_POP: str = "∆pop"; break;
                 
             default: str = "^_^";
         }
@@ -197,6 +202,7 @@ public :
             case TRI_MINUS: str = "-"; break;
             case TRI_ASSIGNMENT: str = "="; break;
             case TRI_CMP: str = "cmp"; break;
+            case TRI_INDEX: str = "index"; break;
                 
             default: str = "^_^";
         }
@@ -671,6 +677,15 @@ public :
                             mag[z++] = DELTA_WRITE_TOP;
                             mag[z++] = TPlusPlus;
                         } else if (t == TMinusMinus) {
+                            mag[z++] = DELTA_POP;
+                            mag[z++] = DELTA_GEN_ASSIGNMENT;
+                            mag[z++] = DELTA_GEN_MINUS;
+                            mag[z++] = DELTA_WRITE_ONE;
+                            mag[z++] = DELTA_WRITE_TOP;
+                            mag[z++] = DELTA_REVERSE_LAST_TWO;
+                            mag[z++] = DELTA_GEN_PLUS;
+                            mag[z++] = DELTA_WRITE_ZERO;
+                            mag[z++] = DELTA_WRITE_TOP;
                             mag[z++] = TMinusMinus;
                         } else {
                             sc->printError("неверный символ", lex);
@@ -714,6 +729,7 @@ public :
                     case netermB :
                         if (t == TOpenSquareBracket) {
                             mag[z++] = TCloseSquareBracket;
+                            mag[z++] = DELTA_GEN_INDEX;
                             mag[z++] = netermExpression;
                             mag[z++] = TOpenSquareBracket;
                             mag[z++] = DELTA3_ARRAY;
@@ -823,6 +839,7 @@ public :
                 
             case DELTA1_ARRAY: {
                 root->semInclude(currentId, TypeNodeArray, currentType, sc);
+                operands[oz++] = new Operand(TYPE_IS_OPERAND, currentId);
                 break;
             }
                 
@@ -849,6 +866,7 @@ public :
                 
             case DELTA3_ARRAY: {
                 root->semGetArray(currentId, sc);
+                operands[oz++] = new Operand(TYPE_IS_OPERAND, currentId);
                 break;
             }
                 
@@ -917,6 +935,11 @@ public :
                 
             case DELTA_GEN_CMP: {
                 generateArithmeticTriad(TRI_CMP);
+                break;
+            }
+                
+            case DELTA_GEN_INDEX: {
+                generateArithmeticTriad(TRI_INDEX);
                 break;
             }
                 
