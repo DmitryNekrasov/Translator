@@ -166,8 +166,12 @@ public :
             case DELTA_GEN_MOD: str = "∆%"; break;
             case DELTA_GEN_PLUS: str = "∆+"; break;
             case DELTA_GEN_MINUS: str = "∆-"; break;
+            case DELTA_GEN_ASSIGNMENT: str = "∆="; break;
+            case DELTA_GEN_CMP: str = "∆cmp"; break;
+            case DELTA_WRITE_CONST: str = "∆wConst"; break;
+            case DELTA_WRITE_MINUS_ONE: str = "∆w-1"; break;
                 
-            default: str = "HZ";
+            default: str = "^_^";
         }
         
         return str;
@@ -183,6 +187,8 @@ public :
             case TRI_MOD: str = "%"; break;
             case TRI_PLUS: str = "+"; break;
             case TRI_MINUS: str = "-"; break;
+            case TRI_ASSIGNMENT: str = "="; break;
+            case TRI_CMP: str = "cmp"; break;
                 
             default: str = "^_^";
         }
@@ -363,6 +369,7 @@ public :
                         
                     case netermE :
                         if (t == TAssignment) {
+                            mag[z++] = DELTA_GEN_ASSIGNMENT;
                             mag[z++] = netermExpression;
                             mag[z++] = TAssignment;
                             mag[z++] = DELTA1_VAR;
@@ -494,6 +501,7 @@ public :
                             mag[z++] = TOpenRoundBracket;
                             mag[z++] = DELTA3_FUNCTION;
                         } else {
+                            mag[z++] = DELTA_GEN_ASSIGNMENT;
                             mag[z++] = netermExpression;
                             mag[z++] = TAssignment;
                             mag[z++] = netermB;
@@ -503,6 +511,7 @@ public :
                     case netermAssignment :
                         if (t == TId) {
                             mag[z++] = TSemicolon;
+                            mag[z++] = DELTA_GEN_ASSIGNMENT;
                             mag[z++] = netermExpression;
                             mag[z++] = TAssignment;
                             mag[z++] = netermItemForAssignment;
@@ -534,6 +543,7 @@ public :
                     case netermA11 :
                         if (t == TMore || t == TLess || t == TEquals || t == TMoreOrEquals || t == TLessOrEquals || t == TNoEquals) {
                             mag[z++] = netermA11;
+                            mag[z++] = DELTA_GEN_CMP;
                             mag[z++] = netermA2;
                             mag[z++] = netermA111;
                         } else {
@@ -567,7 +577,9 @@ public :
                             mag[z++] = TPlus;
                         } else if (t == TMinus) {
                             mag[z++] = netermA21;
+                            mag[z++] = DELTA_GEN_MUL;
                             mag[z++] = netermA3;
+                            mag[z++] = DELTA_WRITE_MINUS_ONE;
                             mag[z++] = TMinus;
                         } else {
                             mag[z++] = netermA21;
@@ -666,6 +678,7 @@ public :
                             mag[z++] = DELTA3_FUNCTION;
                             mag[z++] = TMain;
                         } else {
+                            mag[z++] = DELTA_WRITE_CONST;
                             mag[z++] = netermConst;
                         }
                         break;
@@ -866,6 +879,30 @@ public :
                 
             case DELTA_GEN_MINUS: {
                 generateArithmeticTriad(TRI_MINUS);
+                break;
+            }
+                
+            case DELTA_GEN_ASSIGNMENT: {
+                generateArithmeticTriad(TRI_ASSIGNMENT);
+                break;
+            }
+                
+            case DELTA_GEN_CMP: {
+                generateArithmeticTriad(TRI_CMP);
+                break;
+            }
+                
+                
+            // запись в operands (R)
+                
+            case DELTA_WRITE_CONST: {
+                operands[oz++] = new Operand(TYPE_IS_OPERAND, currentConst);
+                break;
+            }
+                
+            case DELTA_WRITE_MINUS_ONE: {
+                TypeLex minusOne = "-1";
+                operands[oz++] = new Operand(TYPE_IS_OPERAND, minusOne);
                 break;
             }
                 

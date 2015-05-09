@@ -185,11 +185,18 @@
 // восстановить указатель на вершину - достать его из стека
 #define DELTA9 -150
 
+// дельты генерации
 #define DELTA_GEN_MUL -160
 #define DELTA_GEN_DIV -170
 #define DELTA_GEN_MOD -180
 #define DELTA_GEN_PLUS -190
 #define DELTA_GEN_MINUS -200
+#define DELTA_GEN_ASSIGNMENT -210
+#define DELTA_GEN_CMP -220
+
+// дельты записи в стек операндов (R)
+#define DELTA_WRITE_CONST -500
+#define DELTA_WRITE_MINUS_ONE -510
 
 
 // ----------------------------------- ______ -----------------------------------
@@ -204,6 +211,8 @@
 #define TRI_MUL 2200
 #define TRI_DIV 2300
 #define TRI_MOD 2400
+#define TRI_ASSIGNMENT 2500
+#define TRI_CMP 2600
 
 
 typedef char TypeMod[MAX_TEXT];
