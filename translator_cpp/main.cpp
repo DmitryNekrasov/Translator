@@ -20,6 +20,12 @@ int main() {
     cout << "\nДерево:\n";
     ll1->outTree();
     
+    cout << "\nR:\n";
+    ll1->outOperands();
+    
+    cout << "\nТриады:\n";
+    ll1->outTriads();
+    
     printf("\nСинтаксических и семантических ошибок не найдено\n");
     
     return 0;

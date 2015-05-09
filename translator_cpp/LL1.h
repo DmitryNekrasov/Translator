@@ -12,12 +12,46 @@
 #include "defs.h"
 #include "Scanner.h"
 
+struct Operand {
+    int operandType;
+    OperandValue operandValue;
+    
+    Operand(int _operandType, TypeLex lex) {
+        operandType = _operandType;
+        strcpy(operandValue.asOperand, lex);
+    }
+    
+    Operand(int _operandType, int adress) {
+        operandType = _operandType;
+        operandValue.asAdress = adress;
+    }
+    
+    Operand() {}
+};
+
+struct Triad {
+    int operation;
+    Operand *firstOperand, *secondOperand;
+    
+    Triad(int _operation, Operand* _firstOperand, Operand* _secondOperand) {
+        operation = _operation;
+        firstOperand = _firstOperand;
+        secondOperand = _secondOperand;
+    }
+};
+
 class LL1 {
 private : 
     int mag[MAX_LEN_MAG], z = 0;  // магазин и указатель магазина
     
     Tree* treePointers[MAX_LEN_MAG];  // стек указателей на вершины семантического дерева
     int tpz = 0;  // указатель стека
+    
+    Operand* operands[MAX_LEN_MAG];  // стек для операндов (R)
+    int oz = 0;  // указатель стека
+    
+    Triad* triads[MAX_LEN_MAG];  // список триад
+    int tz = 0;  // указатель списка
     
     TScanner *sc;
     Tree *root;  // корень семантического дерева
@@ -127,7 +161,30 @@ public :
             case DELTA4: str = "∆4"; break;
             case DELTA9: str = "∆9"; break;
                 
+            case DELTA_GEN_MUL: str = "∆*"; break;
+            case DELTA_GEN_DIV: str = "∆/"; break;
+            case DELTA_GEN_MOD: str = "∆%"; break;
+            case DELTA_GEN_PLUS: str = "∆+"; break;
+            case DELTA_GEN_MINUS: str = "∆-"; break;
+                
             default: str = "HZ";
+        }
+        
+        return str;
+    }
+    
+    string codeOperationToString(int code) {
+        string str;
+        
+        switch (code) {
+                
+            case TRI_MUL: str = "*"; break;
+            case TRI_DIV: str = "/"; break;
+            case TRI_MOD: str = "%"; break;
+            case TRI_PLUS: str = "+"; break;
+            case TRI_MINUS: str = "-"; break;
+                
+            default: str = "^_^";
         }
         
         return str;
@@ -183,14 +240,13 @@ public :
         TypeLex lex;
         int flag = 1;
         
+        mag[z++] = TEnd;
         mag[z] = netermProgram;
+        
         t = sc->Scanner(lex);
         getCurrents(t, lex);
         
         while (flag) {
-            
-            if (z == -1)
-                break;
             
             outMag();
             
@@ -520,23 +576,18 @@ public :
                         break;
                         
                     case netermA21 :
-                        if (t == TPlus || t == TMinus) {
-                            mag[z++] = netermA21;
-                            mag[z++] = netermA3;
-                            mag[z++] = netermA211;
-                        } else {
-                            epsilon();
-                        }
-                        break;
-                        
-                    case netermA211 :
                         if (t == TPlus) {
+                            mag[z++] = netermA21;
+                            mag[z++] = DELTA_GEN_PLUS;
+                            mag[z++] = netermA3;
                             mag[z++] = TPlus;
                         } else if (t == TMinus) {
+                            mag[z++] = netermA21;
+                            mag[z++] = DELTA_GEN_MINUS;
+                            mag[z++] = netermA3;
                             mag[z++] = TMinus;
                         } else {
-                            sc->printError("неверный символ", lex);
-                            return -1;
+                            epsilon();
                         }
                         break;
                         
@@ -546,25 +597,23 @@ public :
                         break;
                         
                     case netermA31 :
-                        if (t == TMultiply || t == TDiv || t == TMod) {
-                            mag[z++] = netermA31;
-                            mag[z++] = netermA4;
-                            mag[z++] = netermA311;
-                        } else {
-                            epsilon();
-                        }
-                        break;
-                        
-                    case netermA311 :
                         if (t == TMultiply) {
+                            mag[z++] = netermA31;
+                            mag[z++] = DELTA_GEN_MUL;
+                            mag[z++] = netermA4;
                             mag[z++] = TMultiply;
                         } else if (t == TDiv) {
+                            mag[z++] = netermA31;
+                            mag[z++] = DELTA_GEN_DIV;
+                            mag[z++] = netermA4;
                             mag[z++] = TDiv;
                         } else if (t == TMod) {
+                            mag[z++] = netermA31;
+                            mag[z++] = DELTA_GEN_MOD;
+                            mag[z++] = netermA4;
                             mag[z++] = TMod;
                         } else {
-                            sc->printError("неверный символ", lex);
-                            return -1;
+                            epsilon();
                         }
                         break;
                         
@@ -685,6 +734,35 @@ public :
         return 1; // нормальный выход
     }
     
+    void outOperands() {
+        for (int i = 0; i < oz; i++) {
+            outOneOperand(operands[i]);
+            cout << "\n";
+        }
+    }
+    
+    void outOneOperand(Operand* operand) {
+        if (operand->operandType == TYPE_IS_OPERAND)
+            cout << operand->operandValue.asOperand;
+        else
+            cout << "(" << operand->operandValue.asAdress << ")";
+    }
+    
+    void outOneTriad(Triad* triad) {
+        cout << codeOperationToString(triad->operation) << " ";
+        outOneOperand(triad->firstOperand);
+        cout << " ";
+        outOneOperand(triad->secondOperand);
+    }
+    
+    void outTriads() {
+        for (int i = 0; i < tz; i++) {
+            cout << i << ") ";
+            outOneTriad(triads[i]);
+            cout << "\n";
+        }
+    }
+    
     void processingDelta() {
         
         switch (mag[z]) {
@@ -693,6 +771,7 @@ public :
                 
             case DELTA1_VAR: {
                 root->semInclude(currentId, TypeNodeVar, currentType, sc);
+                operands[oz++] = new Operand(TYPE_IS_OPERAND, currentId);
                 break;
             }
                 
@@ -718,6 +797,7 @@ public :
                 
             case DELTA3_VAR: {
                 root->semGetType(currentId, sc);
+                operands[oz++] = new Operand(TYPE_IS_OPERAND, currentId);
                 break;
             }
                 
@@ -761,9 +841,45 @@ public :
                 break;
             }
                 
+                
+            // ---------------------------------------- Триады -----------------------------------------
+                
+            case DELTA_GEN_MUL: {
+                generateArithmeticTriad(TRI_MUL);
+                break;
+            }
+                
+            case DELTA_GEN_DIV: {
+                generateArithmeticTriad(TRI_DIV);
+                break;
+            }
+                
+            case DELTA_GEN_MOD: {
+                generateArithmeticTriad(TRI_MOD);
+                break;
+            }
+                
+            case DELTA_GEN_PLUS: {
+                generateArithmeticTriad(TRI_PLUS);
+                break;
+            }
+                
+            case DELTA_GEN_MINUS: {
+                generateArithmeticTriad(TRI_MINUS);
+                break;
+            }
+                
         }
         
         z--;
+    }
+    
+    void generateArithmeticTriad(int operation) {
+        Operand* operand2 = operands[--oz];
+        Operand* operand1 = operands[--oz];
+        Triad *triad = new Triad(operation, operand1, operand2);
+        triads[tz++] = triad;
+        operands[oz++] = new Operand(TYPE_IS_ADRESS, tz - 1);
     }
     
     void outTree() {

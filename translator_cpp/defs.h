@@ -185,6 +185,26 @@
 // восстановить указатель на вершину - достать его из стека
 #define DELTA9 -150
 
+#define DELTA_GEN_MUL -160
+#define DELTA_GEN_DIV -170
+#define DELTA_GEN_MOD -180
+#define DELTA_GEN_PLUS -190
+#define DELTA_GEN_MINUS -200
+
+
+// ----------------------------------- ______ -----------------------------------
+
+// типы операндов
+#define TYPE_IS_OPERAND 1000
+#define TYPE_IS_ADRESS 1010
+
+// операции для триад
+#define TRI_PLUS 2000
+#define TRI_MINUS 2100
+#define TRI_MUL 2200
+#define TRI_DIV 2300
+#define TRI_MOD 2400
+
 
 typedef char TypeMod[MAX_TEXT];
 typedef char TypeLex[MAX_LEX];
@@ -198,6 +218,11 @@ union DataValue {
     float *arrayDataAsFloat;
     char dataAsChar;
     char *arrayDataAsChar;
+};
+
+union OperandValue {
+    TypeLex asOperand;
+    int asAdress;
 };
 
 using namespace std;
