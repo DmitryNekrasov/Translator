@@ -26,6 +26,11 @@ struct Operand {
         operandValue.asAdress = adress;
     }
     
+    Operand(int _operandType, OperandValue _operandValue) {
+        operandType = _operandType;
+        operandValue = _operandValue;
+    }
+    
     Operand() {}
 };
 
@@ -168,8 +173,11 @@ public :
             case DELTA_GEN_MINUS: str = "∆-"; break;
             case DELTA_GEN_ASSIGNMENT: str = "∆="; break;
             case DELTA_GEN_CMP: str = "∆cmp"; break;
+                
             case DELTA_WRITE_CONST: str = "∆wConst"; break;
             case DELTA_WRITE_MINUS_ONE: str = "∆w-1"; break;
+            case DELTA_WRITE_TOP: str = "∆wTop"; break;
+            case DELTA_WRITE_ONE: str = "∆w1"; break;
                 
             default: str = "^_^";
         }
@@ -630,9 +638,20 @@ public :
                         break;
                         
                     case netermA4 :
-                        if (t == TPlusPlus || t == TMinusMinus) {
+                        if (t == TPlusPlus) {
+                            mag[z++] = DELTA_GEN_ASSIGNMENT;
+                            mag[z++] = DELTA_GEN_PLUS;
+                            mag[z++] = DELTA_WRITE_ONE;
+                            mag[z++] = DELTA_WRITE_TOP;
                             mag[z++] = netermA5;
-                            mag[z++] = netermA511;
+                            mag[z++] = TPlusPlus;
+                        } else if (t == TMinusMinus) {
+                            mag[z++] = DELTA_GEN_ASSIGNMENT;
+                            mag[z++] = DELTA_GEN_MINUS;
+                            mag[z++] = DELTA_WRITE_ONE;
+                            mag[z++] = DELTA_WRITE_TOP;
+                            mag[z++] = netermA5;
+                            mag[z++] = TMinusMinus;
                         } else {
                             mag[z++] = netermA512;
                             mag[z++] = netermA5;
@@ -641,6 +660,15 @@ public :
                         
                     case netermA511 :
                         if (t == TPlusPlus) {
+                            mag[z++] = DELTA_POP;
+                            mag[z++] = DELTA_GEN_ASSIGNMENT;
+                            mag[z++] = DELTA_GEN_PLUS;
+                            mag[z++] = DELTA_WRITE_ONE;
+                            mag[z++] = DELTA_WRITE_TOP;
+                            mag[z++] = DELTA_REVERSE_LAST_TWO;
+                            mag[z++] = DELTA_GEN_PLUS;
+                            mag[z++] = DELTA_WRITE_ZERO;
+                            mag[z++] = DELTA_WRITE_TOP;
                             mag[z++] = TPlusPlus;
                         } else if (t == TMinusMinus) {
                             mag[z++] = TMinusMinus;
@@ -903,6 +931,37 @@ public :
             case DELTA_WRITE_MINUS_ONE: {
                 TypeLex minusOne = "-1";
                 operands[oz++] = new Operand(TYPE_IS_OPERAND, minusOne);
+                break;
+            }
+                
+            case DELTA_WRITE_TOP: {
+                Operand *operand = new Operand(operands[oz - 1]->operandType, operands[oz - 1]->operandValue);
+                operands[oz++] = operand;
+                break;
+            }
+                
+            case DELTA_WRITE_ONE: {
+                TypeLex one = "1";
+                operands[oz++] = new Operand(TYPE_IS_OPERAND, one);
+                break;
+            }
+                
+            case DELTA_WRITE_ZERO: {
+                TypeLex one = "0";
+                operands[oz++] = new Operand(TYPE_IS_OPERAND, one);
+                break;
+            }
+                
+            case DELTA_REVERSE_LAST_TWO: {
+                Operand *tmp = operands[oz - 2];
+                operands[oz - 2] = operands[oz - 1];
+                operands[oz - 1] = tmp;
+                break;
+            }
+                
+            case DELTA_POP: {
+                delete operands[oz - 1];
+                oz--;
                 break;
             }
                 

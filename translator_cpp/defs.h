@@ -197,6 +197,15 @@
 // дельты записи в стек операндов (R)
 #define DELTA_WRITE_CONST -500
 #define DELTA_WRITE_MINUS_ONE -510
+#define DELTA_WRITE_TOP -520
+#define DELTA_WRITE_ONE -530
+#define DELTA_WRITE_ZERO -540
+
+// поменять местами последние 2 элемента стека
+#define DELTA_REVERSE_LAST_TWO -1000
+
+// вытолкнуть элемент из стека
+#define DELTA_POP -2000
 
 
 // ----------------------------------- ______ -----------------------------------
