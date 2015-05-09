@@ -202,6 +202,8 @@
 #define DELTA_WRITE_TOP -520
 #define DELTA_WRITE_ONE -530
 #define DELTA_WRITE_ZERO -540
+#define DELTA_WRITE_CURRENT_ID -550
+#define DELTA_WRITE_COUNT_ELEM -560  // для инициализации массива перечислением констант
 
 // поменять местами последние 2 элемента стека
 #define DELTA_REVERSE_LAST_TWO -1000

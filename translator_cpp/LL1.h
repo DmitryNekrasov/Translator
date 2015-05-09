@@ -164,7 +164,12 @@ public :
             case DELTA3_VAR: str = "∆3_VAR"; break;
             case DELTA3_ARRAY: str = "∆3_ARRAY"; break;
             case DELTA4: str = "∆4"; break;
+            case DELTA5: str = "∆5"; break;
+            case DELTA6: str = "∆6"; break;
+            case DELTA7: str = "∆7"; break;
+            case DELTA8: str = "∆8"; break;
             case DELTA9: str = "∆9"; break;
+            case DELTA10: str = "∆10"; break;
                 
             case DELTA_GEN_MUL: str = "∆*"; break;
             case DELTA_GEN_DIV: str = "∆/"; break;
@@ -181,6 +186,8 @@ public :
             case DELTA_WRITE_TOP: str = "∆wTop"; break;
             case DELTA_WRITE_ONE: str = "∆w1"; break;
             case DELTA_WRITE_ZERO: str = "∆w0"; break;
+            case DELTA_WRITE_CURRENT_ID: str = "∆curID"; break;
+            case DELTA_WRITE_COUNT_ELEM: str = "∆cnt"; break;
                 
             case DELTA_REVERSE_LAST_TWO: str = "∆reverse"; break;
             case DELTA_POP: str = "∆pop"; break;
@@ -434,6 +441,11 @@ public :
                             mag[z++] = netermK;
                             mag[z++] = netermConst;
                             mag[z++] = DELTA10;
+                            mag[z++] = DELTA_GEN_ASSIGNMENT;
+                            mag[z++] = DELTA_WRITE_CONST;
+                            mag[z++] = DELTA_GEN_INDEX;
+                            mag[z++] = DELTA_WRITE_COUNT_ELEM;
+                            mag[z++] = DELTA_WRITE_CURRENT_ID;
                         } else {
                             sc->printError("неверный символ", lex);
                             return -1;
@@ -988,6 +1000,19 @@ public :
             case DELTA_WRITE_ZERO: {
                 TypeLex one = "0";
                 operands[oz++] = new Operand(TYPE_IS_OPERAND, one);
+                break;
+            }
+                
+            case DELTA_WRITE_COUNT_ELEM: {
+                string s = to_string(countElements);
+                TypeLex cnt;
+                strcpy(cnt, s.c_str());
+                operands[oz++] = new Operand(TYPE_IS_OPERAND, cnt);
+                break;
+            }
+                
+            case DELTA_WRITE_CURRENT_ID: {
+                operands[oz++] = new Operand(TYPE_IS_OPERAND, currentId);
                 break;
             }
                 
