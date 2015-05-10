@@ -191,6 +191,7 @@ public :
                 
             case DELTA_REVERSE_LAST_TWO: str = "∆reverse"; break;
             case DELTA_POP: str = "∆pop"; break;
+            case DELTA_INIT_ARRAY_STRING: str = "∆str"; break;
                 
             default: str = "^_^";
         }
@@ -422,6 +423,7 @@ public :
                         
                     case netermG :
                         if (t == TConstString) {
+                            mag[z++] = DELTA_INIT_ARRAY_STRING;
                             mag[z++] = DELTA6;
                             mag[z++] = TConstString;
                         } else if (t == TOpenCurlyBracket) {
@@ -1026,6 +1028,38 @@ public :
             case DELTA_POP: {
                 delete operands[oz - 1];
                 oz--;
+                break;
+            }
+                
+            case DELTA_INIT_ARRAY_STRING: {
+                size_t len = strlen(currentConst);
+                TypeLex ch = {'\'', '_', '\''};
+                for (int i = 1; i < len; i++) {
+                    ch[1] = currentConst[i];
+                    
+                    // концевой 0
+                    if (i == len - 1) {
+                        strcpy(ch, "\\0");
+                    }
+                    
+                    // положить в стек id
+                    operands[oz++] = new Operand(TYPE_IS_OPERAND, currentId);
+                    
+                    // положить в стек индекс
+                    string s = to_string(i - 1);
+                    TypeLex index;
+                    strcpy(index, s.c_str());
+                    operands[oz++] = new Operand(TYPE_IS_OPERAND, index);
+                    
+                    // взять индекс
+                    generateArithmeticTriad(TRI_INDEX);
+                    
+                    // положить в стек символ
+                    operands[oz++] = new Operand(TYPE_IS_OPERAND, ch);
+                    
+                    // сгенерировать присваивание
+                    generateArithmeticTriad(TRI_ASSIGNMENT);
+                }
                 break;
             }
                 
