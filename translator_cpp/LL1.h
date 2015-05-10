@@ -183,6 +183,8 @@ public :
             case DELTA_GEN_INDEX: str = "∆index"; break;
             case DELTA_GEN_CALL: str = "∆call"; break;
             case DELTA_GEN_GNE: str = "∆jne"; break;
+            case DELTA_GEN_PROC: str = "∆proc"; break;
+            case DELTA_GEN_ENDP: str = "∆endp"; break;
                 
             case DELTA_WRITE_CONST: str = "∆wConst"; break;
             case DELTA_WRITE_MINUS_ONE: str = "∆w-1"; break;
@@ -217,6 +219,8 @@ public :
             case TRI_INDEX: str = "index"; break;
             case TRI_CALL: str = "call"; break;
             case TRI_GNE: str = "jne"; break;
+            case TRI_PROC: str = "proc"; break;
+            case TRI_ENDP: str = "endp"; break;
                 
             default: str = "^_^";
         }
@@ -330,9 +334,11 @@ public :
                             mag[z++] = TId;
                         } else if (t == TMain) {
                             mag[z++] = DELTA9;
+                            mag[z++] = DELTA_GEN_ENDP;
                             mag[z++] = netermBlock;
                             mag[z++] = TCloseRoundBracket;
                             mag[z++] = TOpenRoundBracket;
+                            mag[z++] = DELTA_GEN_PROC;
                             mag[z++] = DELTA1_FUNCTION;
                             mag[z++] = TMain;
                         } else {
@@ -344,9 +350,11 @@ public :
                     case netermJ :
                         if (t == TOpenRoundBracket) {
                             mag[z++] = DELTA9;
+                            mag[z++] = DELTA_GEN_ENDP;
                             mag[z++] = netermBlock;
                             mag[z++] = TCloseRoundBracket;
                             mag[z++] = TOpenRoundBracket;
+                            mag[z++] = DELTA_GEN_PROC;
                             mag[z++] = DELTA1_FUNCTION;
                         } else {
                             mag[z++] = TSemicolon;
@@ -985,6 +993,18 @@ public :
                 Triad *triad = new Triad(TRI_GNE, new Operand(TYPE_IS_ADRESS, returnAddress[--raz]), new Operand(TYPE_IS_OPERAND, ""));
                 triads[tz++] = triad;
                 operands[oz++] = new Operand(TYPE_IS_ADRESS, tz - 1);
+                break;
+            }
+                
+            case DELTA_GEN_PROC: {
+                Triad *triad = new Triad(TRI_PROC, new Operand(TYPE_IS_OPERAND, currentId), new Operand(TYPE_IS_OPERAND, ""));
+                triads[tz++] = triad;
+                break;
+            }
+                
+            case DELTA_GEN_ENDP: {
+                Triad *triad = new Triad(TRI_ENDP, new Operand(TYPE_IS_OPERAND, ""), new Operand(TYPE_IS_OPERAND, ""));
+                triads[tz++] = triad;
                 break;
             }
                 

@@ -11,4 +11,8 @@ char main() {
         } while (b);
         
     } while (c--);
+    
+    do {
+        a = 1;
+    } while (a--);
 }
