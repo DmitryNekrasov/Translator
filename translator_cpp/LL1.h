@@ -1220,8 +1220,10 @@ public :
                 multiAdress();
                 magic();
                 
+                replace();
+                
                 finishJne = newOptTriads[notz - 1]->triad->firstOperand->operandValue.asAdress;
-                for (int k = finishWhile; k < tz; k++) {
+                for (int k = finishJne; k < tz; k++) {
                     if (triads[k]->operation == TRI_JNE) {
                         if (triads[k]->firstOperand->operandValue.asAdress == startJne) {
                             triads[k]->firstOperand->operandValue.asAdress = finishJne;
@@ -1229,11 +1231,12 @@ public :
                     }
                 }
                 
-                replace();
+                norma();
+            
                 
-//                outOptTriads(optTriads);
-//                cout << "\n";
-//                outOptTriads(newOptTriads);
+                outOptTriads(optTriads);
+                cout << "\n";
+                outOptTriads(newOptTriads);
                 
             }
         }
@@ -1268,6 +1271,22 @@ public :
             findChange(find, change);
         }
         rename();
+    }
+    
+    void norma() {
+        for (int i = 0; i < notz; i++) {
+            Triad* triad = newOptTriads[i]->triad;
+            if (triad->firstOperand->operandType == TYPE_IS_ADRESS) {
+                if (triad->firstOperand->operandValue.asAdress >= 1000) {
+                    triad->firstOperand->operandValue.asAdress /= 1000;
+                }
+            }
+            if (triad->secondOperand->operandType == TYPE_IS_ADRESS) {
+                if (triad->secondOperand->operandValue.asAdress >= 1000) {
+                    triad->secondOperand->operandValue.asAdress /= 1000;
+                }
+            }
+        }
     }
     
     void rename() {
