@@ -17,13 +17,19 @@ int main() {
     LL1 *ll1 = new LL1(new TScanner("input.cpp"));
     ll1->LL_1();
     
-    cout << "\nДерево:\n";
-    ll1->outTree();
+//    cout << "\nДерево:\n";
+//    ll1->outTree();
+//    
+//    cout << "\nR:\n";
+//    ll1->outOperands();
+//    cout << "\n";
     
-    cout << "\nR:\n";
-    ll1->outOperands();
+    cout << "Триады:\n";
+    ll1->outTriads();
     
-    cout << "\nТриады:\n";
+    ll1->optimization();
+    
+    cout << "\nОптимизированные триады:\n";
     ll1->outTriads();
     
     printf("\nСинтаксических и семантических ошибок не найдено\n");

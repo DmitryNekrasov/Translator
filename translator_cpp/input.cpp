@@ -1,22 +1,33 @@
+char q = 8;
+
 float f1() {
-    return 5;
+    return q;
 }
 
 char main() {
-    char a, b, c = 8 + 7;
+    
+    char a, b, c, e, d;
+    
     do {
-        c = a + b + f1();
-        
+    
         do {
-            return 1;
-            b = b - 1;
-        } while (b);
         
-    } while (c--);
+            do {
+                a = a + c;
+                a = 5 * q;
+                b = a + 7 + (d * 7);
+            } while (e > (a * 8));
+            
+            a = 8 * 7;
+            
+        } while (1);
+        
+        b = q + 7;
+        
+    } while (77777);
     
-    do {
-        a = 1;
-    } while (a--);
+    return 7;
     
-    return a + b;
+    b = b++;
+    
 }

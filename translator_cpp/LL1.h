@@ -45,6 +45,12 @@ struct Triad {
     }
 };
 
+struct OptTriad {
+    int num;  // номер триады
+    Triad* triad;  // сама триада
+    int mark;  // признак триады (выносить или нет)
+};
+
 class LL1 {
 private : 
     int mag[MAX_LEN_MAG], z = 0;  // магазин и указатель магазина
@@ -295,8 +301,7 @@ public :
         
         while (flag) {
             
-            outMag();
-//            outOperands();
+//            outMag();
             
             if (isTerminal(mag[z])) {
                 
@@ -1170,6 +1175,216 @@ public :
     
     void outTree() {
         root->printTree();
+    }
+    
+    int startWhile = -1, finishWhile = -1;
+    int startJne = -1, finishJne = -1;;
+    
+    void optimization() {
+        
+        for (int i = 0; i < tz; i++) {
+            if (triads[i]->operation == TRI_JNE) {
+                
+                startJne = triads[i]->firstOperand->operandValue.asAdress;
+                
+                otz = 0;
+                notz = 0;
+                coz = 0;
+                
+                finishWhile = i;
+                startWhile = triads[i]->firstOperand->operandValue.asAdress;
+                copyTriads(startWhile, finishWhile);
+                
+                changeOperands[coz++] = new Operand(TYPE_IS_ADRESS, optTriads[0]->num);
+                optTriads[0]->mark = MARK_NO;
+                
+                // много прогонок
+                for (int k = 0; k < 30; k++) {
+                    
+//                    // вывод для отладка
+//                    cout << "\n";
+//                    outOptTriads(optTriads);
+//                    cout << coz << "\n";
+//                    for (int k = 0; k < coz; k++) {
+//                        outOneOperand(changeOperands[k]);
+//                        cout << " ";
+//                    }
+//                    cout << "\n";
+                    
+                    
+                    sweep();
+                }
+                
+                generateNewOptTriads();
+                multiNum();
+                multiAdress();
+                magic();
+                
+                finishJne = newOptTriads[notz - 1]->triad->firstOperand->operandValue.asAdress;
+                for (int k = finishWhile; k < tz; k++) {
+                    if (triads[k]->operation == TRI_JNE) {
+                        if (triads[k]->firstOperand->operandValue.asAdress == startJne) {
+                            triads[k]->firstOperand->operandValue.asAdress = finishJne;
+                        }
+                    }
+                }
+                
+                replace();
+                
+//                outOptTriads(optTriads);
+//                cout << "\n";
+//                outOptTriads(newOptTriads);
+                
+            }
+        }
+    }
+    
+    OptTriad* optTriads[MAX_LEN_MAG];  // триады цикла, которые нужно оптимизировать
+    int otz = 0;
+    OptTriad* newOptTriads[MAX_LEN_MAG];  // оптимизированные триады стоят сверху
+    int notz = 0;
+    int numOptTriad[MAX_LEN_MAG];  // номера оптимизированных триад
+    int cntNumOptTriad = 0;
+    
+    void generateNewOptTriads() {
+        for (int i = 0; i < otz; i++) {
+            if (optTriads[i]->mark == MARK_HZ) {
+                newOptTriads[notz++] = optTriads[i];
+                cntNumOptTriad++;
+            }
+        }
+        for (int i = 0; i < otz; i++) {
+            if (optTriads[i]->mark == MARK_NO) {
+                newOptTriads[notz++] = optTriads[i];
+            }
+        }
+        
+    }
+    
+    void magic() {
+        for (int i = 0; i < notz; i++) {
+            int find = newOptTriads[i]->num;
+            int change = optTriads[i]->num / 1000;
+            findChange(find, change);
+        }
+        rename();
+    }
+    
+    void rename() {
+        int q = startWhile;
+        for (int i = 0; i < notz; i++) {
+            newOptTriads[i]->num = q++;
+        }
+    }
+    
+    void findChange(int find, int change) {
+        for (int i = 0; i < notz; i++) {
+            Triad* triad = newOptTriads[i]->triad;
+            
+            if (triad->firstOperand->operandType == TYPE_IS_ADRESS) {
+                if (triad->firstOperand->operandValue.asAdress == find)
+                    triad->firstOperand->operandValue.asAdress = change;
+            }
+            if (triad->secondOperand->operandType == TYPE_IS_ADRESS) {
+                if (triad->secondOperand->operandValue.asAdress == find)
+                    triad->secondOperand->operandValue.asAdress = change;
+            }
+            
+        }
+    }
+    
+    void copyTriads(int start, int finish) {
+        otz = 0;
+        for (int i = start; i <= finish; i++) {
+            optTriads[otz] = new OptTriad();
+            optTriads[otz]->num = i;
+            optTriads[otz]->triad = triads[i];
+            optTriads[otz]->mark = MARK_HZ;
+            otz++;
+        }
+    }
+    
+    Operand* changeOperands[MAX_LEN_MAG];  // массив изменяемых внутри цикла операндов
+    int coz = 0;
+    
+    void sweep() {
+        
+        for (int i = 0; i < otz; i++) {
+            
+            if (optTriads[i]->mark == MARK_NO)
+                continue;
+            
+            Triad* triad = optTriads[i]->triad;
+            
+            if (triad->operation == TRI_ASSIGNMENT) {
+                changeOperands[coz++] = triad->firstOperand;
+                changeOperands[coz++] = new Operand(TYPE_IS_ADRESS, optTriads[i]->num);
+                optTriads[i]->mark = MARK_NO;
+            } else if (triad->operation == TRI_CALL || triad->operation == TRI_JNE || triad->operation == TRI_JMP || triad->operation == TRI_CMP) {
+                changeOperands[coz++] = new Operand(TYPE_IS_ADRESS, optTriads[i]->num);
+                optTriads[i]->mark = MARK_NO;
+            } else {
+                bool flag = operandInChange(triad->firstOperand) || operandInChange(triad->secondOperand);
+                if (flag) {
+                    changeOperands[coz++] = new Operand(TYPE_IS_ADRESS, optTriads[i]->num);
+                    optTriads[i]->mark = MARK_NO;
+                }
+            }
+            
+        }
+    }
+    
+    bool operandInChange(Operand* operand) {
+        for (int i = 0; i < coz; i++) {
+            Operand* changeOperand = changeOperands[i];
+            
+            if (operand->operandType != changeOperand->operandType)
+                continue;
+            
+            if (operand->operandType == TYPE_IS_ADRESS) {
+                if (operand->operandValue.asAdress == changeOperand->operandValue.asAdress)
+                    return true;
+            } else {
+                if (strcmp(operand->operandValue.asOperand, changeOperand->operandValue.asOperand) == 0)
+                    return true;
+            }
+            
+        }
+        return false;
+    }
+    
+    void multiNum() {
+        for (int i = 0; i < notz; i++) {
+            newOptTriads[i]->num *= 1000;
+        }
+    }
+    
+    void multiAdress() {
+        for (int i = 0; i < notz; i++) {
+            Triad* triad = newOptTriads[i]->triad;
+            if (triad->firstOperand->operandType == TYPE_IS_ADRESS) {
+                triad->firstOperand->operandValue.asAdress *= 1000;
+            }
+            if (triad->secondOperand->operandType == TYPE_IS_ADRESS) {
+                triad->secondOperand->operandValue.asAdress *= 1000;
+            }
+        }
+    }
+    
+    void replace() {
+        int cnt = 0;
+        for (int i = startWhile; i <= finishWhile; i++) {
+            triads[i] = newOptTriads[cnt]->triad;
+            cnt++;
+        }
+    }
+    
+    void outOptTriads(OptTriad* optTriads[]) {
+        for (int i = 0; i < otz; i++) {
+            cout << "[" << optTriads[i]->mark << "] "<< optTriads[i]->num << ") ";
+            outOneTriad(optTriads[i]->triad);
+            cout << "\n";
+        }
     }
     
     LL1(TScanner *s) {

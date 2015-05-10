@@ -250,6 +250,12 @@
 #define TRI_JMP 3200
 
 
+// признаки триады
+#define MARK_YES 1
+#define MARK_NO 2
+#define MARK_HZ 3
+
+
 typedef char TypeMod[MAX_TEXT];
 typedef char TypeLex[MAX_LEX];
 
