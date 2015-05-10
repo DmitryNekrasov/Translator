@@ -207,6 +207,8 @@
 #define DELTA_WRITE_ZERO -540
 #define DELTA_WRITE_CURRENT_ID -550
 #define DELTA_WRITE_COUNT_ELEM -560  // для инициализации массива перечислением констант
+#define DELTA_WRITE_PROLOG -570
+#define DELTA_WRITE_EPILOG -580
 
 // поменять местами последние 2 элемента стека
 #define DELTA_REVERSE_LAST_TWO -1000
@@ -244,6 +246,9 @@
 
 typedef char TypeMod[MAX_TEXT];
 typedef char TypeLex[MAX_LEX];
+
+TypeLex prolog = "Prolog";
+TypeLex epilog = "Epilog";
 
 union DataValue {
     bool dataAsBool;

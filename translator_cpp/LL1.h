@@ -335,9 +335,13 @@ public :
                         } else if (t == TMain) {
                             mag[z++] = DELTA9;
                             mag[z++] = DELTA_GEN_ENDP;
+                            mag[z++] = DELTA_GEN_CALL;
+                            mag[z++] = DELTA_WRITE_EPILOG;
                             mag[z++] = netermBlock;
                             mag[z++] = TCloseRoundBracket;
                             mag[z++] = TOpenRoundBracket;
+                            mag[z++] = DELTA_GEN_CALL;
+                            mag[z++] = DELTA_WRITE_PROLOG;
                             mag[z++] = DELTA_GEN_PROC;
                             mag[z++] = DELTA1_FUNCTION;
                             mag[z++] = TMain;
@@ -351,9 +355,13 @@ public :
                         if (t == TOpenRoundBracket) {
                             mag[z++] = DELTA9;
                             mag[z++] = DELTA_GEN_ENDP;
+                            mag[z++] = DELTA_GEN_CALL;
+                            mag[z++] = DELTA_WRITE_EPILOG;
                             mag[z++] = netermBlock;
                             mag[z++] = TCloseRoundBracket;
                             mag[z++] = TOpenRoundBracket;
+                            mag[z++] = DELTA_GEN_CALL;
+                            mag[z++] = DELTA_WRITE_PROLOG;
                             mag[z++] = DELTA_GEN_PROC;
                             mag[z++] = DELTA1_FUNCTION;
                         } else {
@@ -1037,6 +1045,16 @@ public :
             case DELTA_WRITE_ZERO: {
                 TypeLex one = "0";
                 operands[oz++] = new Operand(TYPE_IS_OPERAND, one);
+                break;
+            }
+                
+            case DELTA_WRITE_PROLOG: {
+                operands[oz++] = new Operand(TYPE_IS_OPERAND, prolog);
+                break;
+            }
+                
+            case DELTA_WRITE_EPILOG: {
+                operands[oz++] = new Operand(TYPE_IS_OPERAND, epilog);
                 break;
             }
                 
