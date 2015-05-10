@@ -2,6 +2,13 @@ float f1() {
 }
 
 char main() {
-    char str[6] = "Hello", a, b;
-    char z = str[0] * (a + b);
+    char a, b, c = 8 + 7;
+    do {
+        c = a + b;
+        
+        do {
+            b = b - 1;
+        } while (b);
+        
+    } while (c--);
 }

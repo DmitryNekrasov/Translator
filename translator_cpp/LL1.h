@@ -68,6 +68,8 @@ private :
     
     int countElements = 0;  // текущее количество перечисляемых констант при присваивании в массив
     
+    int returnAddress[MAX_LEN_MAG], raz = 0;  // стек адресов возврата (для do-while) и указатель стека
+    
 public :
     
     string codeToString(int code) {
@@ -180,6 +182,7 @@ public :
             case DELTA_GEN_CMP: str = "∆cmp"; break;
             case DELTA_GEN_INDEX: str = "∆index"; break;
             case DELTA_GEN_CALL: str = "∆call"; break;
+            case DELTA_GEN_GNE: str = "∆jne"; break;
                 
             case DELTA_WRITE_CONST: str = "∆wConst"; break;
             case DELTA_WRITE_MINUS_ONE: str = "∆w-1"; break;
@@ -213,6 +216,7 @@ public :
             case TRI_CMP: str = "cmp"; break;
             case TRI_INDEX: str = "index"; break;
             case TRI_CALL: str = "call"; break;
+            case TRI_GNE: str = "jne"; break;
                 
             default: str = "^_^";
         }
@@ -782,10 +786,14 @@ public :
                     case netermDoWhile :
                         mag[z++] = TSemicolon;
                         mag[z++] = TCloseRoundBracket;
+                        mag[z++] = DELTA_GEN_GNE;
+                        mag[z++] = DELTA_GEN_CMP;
+                        mag[z++] = DELTA_WRITE_ZERO;
                         mag[z++] = netermExpression;
                         mag[z++] = TOpenRoundBracket;
                         mag[z++] = TWhile;
                         mag[z++] = netermOneOperator;
+                        mag[z++] = DELTA_RETURN_ADRESS_PUSH;
                         mag[z++] = TDo;
                         break;
                         
@@ -973,6 +981,13 @@ public :
                 break;
             }
                 
+            case DELTA_GEN_GNE: {
+                Triad *triad = new Triad(TRI_GNE, new Operand(TYPE_IS_ADRESS, returnAddress[--raz]), new Operand(TYPE_IS_OPERAND, ""));
+                triads[tz++] = triad;
+                operands[oz++] = new Operand(TYPE_IS_ADRESS, tz - 1);
+                break;
+            }
+                
                 
             // запись в operands (R)
                 
@@ -1039,7 +1054,7 @@ public :
                     
                     // концевой 0
                     if (i == len - 1) {
-                        strcpy(ch, "\\0");
+                        strcpy(ch, "\'\\0\'");
                     }
                     
                     // положить в стек id
@@ -1060,6 +1075,11 @@ public :
                     // сгенерировать присваивание
                     generateArithmeticTriad(TRI_ASSIGNMENT);
                 }
+                break;
+            }
+                
+            case DELTA_RETURN_ADRESS_PUSH: {
+                returnAddress[raz++] = tz;
                 break;
             }
                 

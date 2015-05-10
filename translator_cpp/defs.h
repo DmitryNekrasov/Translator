@@ -195,6 +195,7 @@
 #define DELTA_GEN_CMP -220
 #define DELTA_GEN_INDEX -230
 #define DELTA_GEN_CALL -240
+#define DELTA_GEN_GNE -250
 
 // дельты записи в стек операндов (R)
 #define DELTA_WRITE_CONST -500
@@ -214,6 +215,9 @@
 // инициализировать массив строковой константой
 #define DELTA_INIT_ARRAY_STRING -3000
 
+// занести адрес возврата в стек
+#define DELTA_RETURN_ADRESS_PUSH -4000
+
 
 // ----------------------------------- ______ -----------------------------------
 
@@ -231,6 +235,7 @@
 #define TRI_CMP 2600
 #define TRI_INDEX 2700
 #define TRI_CALL 2800
+#define TRI_GNE 2900
 
 
 typedef char TypeMod[MAX_TEXT];
