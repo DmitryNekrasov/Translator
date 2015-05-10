@@ -70,6 +70,8 @@ private :
     
     int returnAddress[MAX_LEN_MAG], raz = 0;  // стек адресов возврата (для do-while) и указатель стека
     
+    int writeTriadAdress[MAX_LEN_MAG], wtz = 0;  // список адресов триад, которые нужно дописать, и указатель списка
+    
 public :
     
     string codeToString(int code) {
@@ -182,21 +184,27 @@ public :
             case DELTA_GEN_CMP: str = "∆cmp"; break;
             case DELTA_GEN_INDEX: str = "∆index"; break;
             case DELTA_GEN_CALL: str = "∆call"; break;
-            case DELTA_GEN_GNE: str = "∆jne"; break;
+            case DELTA_GEN_JNE: str = "∆jne"; break;
             case DELTA_GEN_PROC: str = "∆proc"; break;
             case DELTA_GEN_ENDP: str = "∆endp"; break;
+            case DELTA_GEN_JMP: str = "∆jmp"; break;
                 
             case DELTA_WRITE_CONST: str = "∆wConst"; break;
             case DELTA_WRITE_MINUS_ONE: str = "∆w-1"; break;
             case DELTA_WRITE_TOP: str = "∆wTop"; break;
             case DELTA_WRITE_ONE: str = "∆w1"; break;
             case DELTA_WRITE_ZERO: str = "∆w0"; break;
-            case DELTA_WRITE_CURRENT_ID: str = "∆curID"; break;
-            case DELTA_WRITE_COUNT_ELEM: str = "∆cnt"; break;
+            case DELTA_WRITE_CURRENT_ID: str = "∆wCurID"; break;
+            case DELTA_WRITE_COUNT_ELEM: str = "∆wCnt"; break;
+            case DELTA_WRITE_PROLOG: str = "∆wProlog"; break;
+            case DELTA_WRITE_EPILOG: str = "∆wEpilog"; break;
+            case DELTA_WRITE_EAX: str = "∆wEAX"; break;
+            case DELTA_FINISH_WRITE: str = "∆finish"; break;
                 
             case DELTA_REVERSE_LAST_TWO: str = "∆reverse"; break;
             case DELTA_POP: str = "∆pop"; break;
             case DELTA_INIT_ARRAY_STRING: str = "∆str"; break;
+            case DELTA_RETURN_ADRESS_PUSH: str = "∆adrPush"; break;
                 
             default: str = "^_^";
         }
@@ -218,9 +226,10 @@ public :
             case TRI_CMP: str = "cmp"; break;
             case TRI_INDEX: str = "index"; break;
             case TRI_CALL: str = "call"; break;
-            case TRI_GNE: str = "jne"; break;
+            case TRI_JNE: str = "jne"; break;
             case TRI_PROC: str = "proc"; break;
             case TRI_ENDP: str = "endp"; break;
+            case TRI_JMP: str = "jmp"; break;
                 
             default: str = "^_^";
         }
@@ -335,6 +344,7 @@ public :
                         } else if (t == TMain) {
                             mag[z++] = DELTA9;
                             mag[z++] = DELTA_GEN_ENDP;
+                            mag[z++] = DELTA_FINISH_WRITE;
                             mag[z++] = DELTA_GEN_CALL;
                             mag[z++] = DELTA_WRITE_EPILOG;
                             mag[z++] = netermBlock;
@@ -355,6 +365,7 @@ public :
                         if (t == TOpenRoundBracket) {
                             mag[z++] = DELTA9;
                             mag[z++] = DELTA_GEN_ENDP;
+                            mag[z++] = DELTA_FINISH_WRITE;
                             mag[z++] = DELTA_GEN_CALL;
                             mag[z++] = DELTA_WRITE_EPILOG;
                             mag[z++] = netermBlock;
@@ -802,7 +813,7 @@ public :
                     case netermDoWhile :
                         mag[z++] = TSemicolon;
                         mag[z++] = TCloseRoundBracket;
-                        mag[z++] = DELTA_GEN_GNE;
+                        mag[z++] = DELTA_GEN_JNE;
                         mag[z++] = DELTA_GEN_CMP;
                         mag[z++] = DELTA_WRITE_ZERO;
                         mag[z++] = netermExpression;
@@ -814,8 +825,11 @@ public :
                         break;
                         
                     case netermReturn :
+                        mag[z++] = DELTA_GEN_JMP;
                         mag[z++] = TSemicolon;
+                        mag[z++] = DELTA_GEN_ASSIGNMENT;
                         mag[z++] = netermExpression;
+                        mag[z++] = DELTA_WRITE_EAX;
                         mag[z++] = TReturn;
                         break;
                         
@@ -997,8 +1011,8 @@ public :
                 break;
             }
                 
-            case DELTA_GEN_GNE: {
-                Triad *triad = new Triad(TRI_GNE, new Operand(TYPE_IS_ADRESS, returnAddress[--raz]), new Operand(TYPE_IS_OPERAND, ""));
+            case DELTA_GEN_JNE: {
+                Triad *triad = new Triad(TRI_JNE, new Operand(TYPE_IS_ADRESS, returnAddress[--raz]), new Operand(TYPE_IS_OPERAND, ""));
                 triads[tz++] = triad;
                 operands[oz++] = new Operand(TYPE_IS_ADRESS, tz - 1);
                 break;
@@ -1012,6 +1026,13 @@ public :
                 
             case DELTA_GEN_ENDP: {
                 Triad *triad = new Triad(TRI_ENDP, new Operand(TYPE_IS_OPERAND, ""), new Operand(TYPE_IS_OPERAND, ""));
+                triads[tz++] = triad;
+                break;
+            }
+                
+            case DELTA_GEN_JMP: {
+                Triad *triad = new Triad(TRI_JMP, new Operand(TYPE_IS_ADRESS, -1), new Operand(TYPE_IS_OPERAND, ""));
+                writeTriadAdress[wtz++] = tz;
                 triads[tz++] = triad;
                 break;
             }
@@ -1068,6 +1089,19 @@ public :
                 
             case DELTA_WRITE_CURRENT_ID: {
                 operands[oz++] = new Operand(TYPE_IS_OPERAND, currentId);
+                break;
+            }
+            
+            case DELTA_WRITE_EAX: {
+                operands[oz++] = new Operand(TYPE_IS_OPERAND, eax);
+                break;
+            }
+                
+            case DELTA_FINISH_WRITE: {
+                for (int i = 0; i < wtz; i++) {
+                    triads[writeTriadAdress[i]]->firstOperand->operandValue.asAdress = tz - 1;
+                }
+                wtz = 0;
                 break;
             }
                 

@@ -195,9 +195,10 @@
 #define DELTA_GEN_CMP -220
 #define DELTA_GEN_INDEX -230
 #define DELTA_GEN_CALL -240
-#define DELTA_GEN_GNE -250
+#define DELTA_GEN_JNE -250
 #define DELTA_GEN_PROC -260
 #define DELTA_GEN_ENDP -270
+#define DELTA_GEN_JMP -280
 
 // дельты записи в стек операндов (R)
 #define DELTA_WRITE_CONST -500
@@ -209,6 +210,10 @@
 #define DELTA_WRITE_COUNT_ELEM -560  // для инициализации массива перечислением констант
 #define DELTA_WRITE_PROLOG -570
 #define DELTA_WRITE_EPILOG -580
+#define DELTA_WRITE_EAX -590
+
+// дописать триады
+#define DELTA_FINISH_WRITE -600
 
 // поменять местами последние 2 элемента стека
 #define DELTA_REVERSE_LAST_TWO -1000
@@ -239,9 +244,10 @@
 #define TRI_CMP 2600
 #define TRI_INDEX 2700
 #define TRI_CALL 2800
-#define TRI_GNE 2900
+#define TRI_JNE 2900
 #define TRI_PROC 3000
 #define TRI_ENDP 3100
+#define TRI_JMP 3200
 
 
 typedef char TypeMod[MAX_TEXT];
@@ -249,6 +255,7 @@ typedef char TypeLex[MAX_LEX];
 
 TypeLex prolog = "Prolog";
 TypeLex epilog = "Epilog";
+TypeLex eax = "eax";
 
 union DataValue {
     bool dataAsBool;

@@ -1,4 +1,5 @@
 float f1() {
+    return 5;
 }
 
 char main() {
@@ -7,6 +8,7 @@ char main() {
         c = a + b + f1();
         
         do {
+            return 1;
             b = b - 1;
         } while (b);
         
@@ -15,4 +17,6 @@ char main() {
     do {
         a = 1;
     } while (a--);
+    
+    return a + b;
 }
