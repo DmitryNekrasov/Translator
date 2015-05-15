@@ -199,6 +199,7 @@
 #define DELTA_GEN_PROC -260
 #define DELTA_GEN_ENDP -270
 #define DELTA_GEN_JMP -280
+#define DELTA_GEN_MOV -290
 
 // дельты записи в стек операндов (R)
 #define DELTA_WRITE_CONST -500
@@ -248,6 +249,7 @@
 #define TRI_PROC 3000
 #define TRI_ENDP 3100
 #define TRI_JMP 3200
+#define TRI_MOV 3300
 
 
 // признаки триады
@@ -261,7 +263,7 @@ typedef char TypeLex[MAX_LEX];
 
 TypeLex prolog = "Prolog";
 TypeLex epilog = "Epilog";
-TypeLex eax = "eax";
+TypeLex eax = "ecx";
 
 union DataValue {
     bool dataAsBool;

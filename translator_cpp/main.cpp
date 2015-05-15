@@ -27,10 +27,13 @@ int main() {
     cout << "Триады:\n";
     ll1->outTriads();
     
-    ll1->optimization();
+//    ll1->optimization();
+//    
+//    cout << "\nОптимизированные триады:\n";
+//    ll1->outTriads();
     
-    cout << "\nОптимизированные триады:\n";
-    ll1->outTriads();
+    cout << "\nASM:\n";
+    ll1->generateAsm();
     
     printf("\nСинтаксических и семантических ошибок не найдено\n");
     

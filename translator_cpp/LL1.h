@@ -51,6 +51,15 @@ struct OptTriad {
     int mark;  // признак триады (выносить или нет)
 };
 
+struct AsmTriad {
+    string registr;  // ригистр, который занимает результат работы триады
+    Triad* triad;  // триада
+    AsmTriad(string _registr, Triad* _triad) {
+        registr = _registr;
+        triad = _triad;
+    }
+};
+
 class LL1 {
 private : 
     int mag[MAX_LEN_MAG], z = 0;  // магазин и указатель магазина
@@ -235,7 +244,8 @@ public :
             case TRI_JNE: str = "jne"; break;
             case TRI_PROC: str = "proc"; break;
             case TRI_ENDP: str = "endp"; break;
-            case TRI_JMP: str = "jmp"; break;
+            case TRI_JMP: str = "ret"; break;
+            case TRI_MOV: str = "mov"; break;
                 
             default: str = "^_^";
         }
@@ -349,14 +359,14 @@ public :
                         } else if (t == TMain) {
                             mag[z++] = DELTA9;
                             mag[z++] = DELTA_GEN_ENDP;
-                            mag[z++] = DELTA_FINISH_WRITE;
-                            mag[z++] = DELTA_GEN_CALL;
-                            mag[z++] = DELTA_WRITE_EPILOG;
+//                            mag[z++] = DELTA_FINISH_WRITE;
+//                            mag[z++] = DELTA_GEN_CALL;
+//                            mag[z++] = DELTA_WRITE_EPILOG;
                             mag[z++] = netermBlock;
                             mag[z++] = TCloseRoundBracket;
                             mag[z++] = TOpenRoundBracket;
-                            mag[z++] = DELTA_GEN_CALL;
-                            mag[z++] = DELTA_WRITE_PROLOG;
+//                            mag[z++] = DELTA_GEN_CALL;
+//                            mag[z++] = DELTA_WRITE_PROLOG;
                             mag[z++] = DELTA_GEN_PROC;
                             mag[z++] = DELTA1_FUNCTION;
                             mag[z++] = TMain;
@@ -370,14 +380,14 @@ public :
                         if (t == TOpenRoundBracket) {
                             mag[z++] = DELTA9;
                             mag[z++] = DELTA_GEN_ENDP;
-                            mag[z++] = DELTA_FINISH_WRITE;
-                            mag[z++] = DELTA_GEN_CALL;
-                            mag[z++] = DELTA_WRITE_EPILOG;
+//                            mag[z++] = DELTA_FINISH_WRITE;
+//                            mag[z++] = DELTA_GEN_CALL;
+//                            mag[z++] = DELTA_WRITE_EPILOG;
                             mag[z++] = netermBlock;
                             mag[z++] = TCloseRoundBracket;
                             mag[z++] = TOpenRoundBracket;
-                            mag[z++] = DELTA_GEN_CALL;
-                            mag[z++] = DELTA_WRITE_PROLOG;
+//                            mag[z++] = DELTA_GEN_CALL;
+//                            mag[z++] = DELTA_WRITE_PROLOG;
                             mag[z++] = DELTA_GEN_PROC;
                             mag[z++] = DELTA1_FUNCTION;
                         } else {
@@ -832,7 +842,7 @@ public :
                     case netermReturn :
                         mag[z++] = DELTA_GEN_JMP;
                         mag[z++] = TSemicolon;
-                        mag[z++] = DELTA_GEN_ASSIGNMENT;
+                        mag[z++] = DELTA_GEN_MOV;
                         mag[z++] = netermExpression;
                         mag[z++] = DELTA_WRITE_EAX;
                         mag[z++] = TReturn;
@@ -1036,9 +1046,14 @@ public :
             }
                 
             case DELTA_GEN_JMP: {
-                Triad *triad = new Triad(TRI_JMP, new Operand(TYPE_IS_ADRESS, -1), new Operand(TYPE_IS_OPERAND, ""));
+                Triad *triad = new Triad(TRI_JMP, new Operand(TYPE_IS_OPERAND, ""), new Operand(TYPE_IS_OPERAND, ""));
                 writeTriadAdress[wtz++] = tz;
                 triads[tz++] = triad;
+                break;
+            }
+                
+            case DELTA_GEN_MOV: {
+                generateArithmeticTriad(TRI_MOV);
                 break;
             }
                 
@@ -1231,12 +1246,13 @@ public :
                     }
                 }
                 
+                // лютый костыль
                 norma();
             
                 
-                outOptTriads(optTriads);
-                cout << "\n";
-                outOptTriads(newOptTriads);
+//                outOptTriads(optTriads);
+//                cout << "\n";
+//                outOptTriads(newOptTriads);
                 
             }
         }
@@ -1339,7 +1355,7 @@ public :
                 changeOperands[coz++] = triad->firstOperand;
                 changeOperands[coz++] = new Operand(TYPE_IS_ADRESS, optTriads[i]->num);
                 optTriads[i]->mark = MARK_NO;
-            } else if (triad->operation == TRI_CALL || triad->operation == TRI_JNE || triad->operation == TRI_JMP || triad->operation == TRI_CMP) {
+            } else if (triad->operation == TRI_CALL || triad->operation == TRI_JNE || triad->operation == TRI_JMP || triad->operation == TRI_CMP || triad->operation == TRI_INDEX) {
                 changeOperands[coz++] = new Operand(TYPE_IS_ADRESS, optTriads[i]->num);
                 optTriads[i]->mark = MARK_NO;
             } else {
@@ -1405,6 +1421,102 @@ public :
             cout << "\n";
         }
     }
+    
+    int offset = -1;
+    
+    void generateAsm() {
+        generateDefVar();
+        createAsmTriad();
+        
+        for (int i = 0; i < tz; i++) {
+            
+            Triad* triad = asmTriads[i]->triad;
+            
+            if (triad->operation == TRI_PROC || triad->operation == TRI_ENDP) {
+                outOneTriad(triad);
+                cout << "\n";
+            } else if (triad->operation == TRI_ASSIGNMENT) {
+                if (triad->secondOperand->operandType == TYPE_IS_OPERAND) {
+                    cout << "mov edx, " << triad->secondOperand->operandValue.asOperand << "\n";
+                    cout << "mov " << triad->firstOperand->operandValue.asOperand << ", edx";
+                } else {
+                    int adres = triad->secondOperand->operandValue.asAdress;
+                    string registr = asmTriads[adres]->registr;
+                    cout << "mov edx, " << registr << "\n";
+                    cout << "mov " << triad->firstOperand->operandValue.asOperand << ", edx";
+                }
+                cout << "\n";
+                
+                offset = -1;
+                
+            } else if (triad->operation == TRI_MOV) {
+                if (triad->secondOperand->operandType == TYPE_IS_OPERAND) {
+                    cout << "mov ecx, " << triad->secondOperand->operandValue.asOperand;
+                } else {
+                    int adres = triad->secondOperand->operandValue.asAdress;
+                    string registr = asmTriads[adres]->registr;
+                    cout << "mov ecx, " << registr;
+                }
+                cout << "\nret\n";
+            } else if (triad->operation == TRI_CALL) {
+                outOneTriad(triad);
+                cout << "\n";
+                asmTriads[i]->registr = "ecx";
+            } else if (triad->operation == TRI_MINUS) {
+                
+                if (triad->firstOperand->operandType == TYPE_IS_OPERAND) {
+                    cout << "mov eax, " << triad->firstOperand->operandValue.asOperand << "\n";
+                } else {
+                    int adres = triad->firstOperand->operandValue.asAdress;
+                    string registr = asmTriads[adres]->registr;
+                    cout << "mov eax, " << registr << "\n";
+                }
+                
+                if (triad->secondOperand->operandType == TYPE_IS_OPERAND) {
+                    cout << "mov ebx, " << triad->secondOperand->operandValue.asOperand << "\n";
+                } else {
+                    int adres = triad->secondOperand->operandValue.asAdress;
+                    string registr = asmTriads[adres]->registr;
+                    cout << "mov ebx, " << registr << "\n";
+                }
+                
+                cout << "sub eax, ebx\n";
+                cout << "mov " << offset << "(ebp), eax\n";
+                asmTriads[i]->registr = to_string(offset) + "(ebp)";
+                offset--;
+            }
+            
+            
+        }
+        
+    }
+    
+    AsmTriad* asmTriads[MAX_LEN_MAG];
+    
+    void createAsmTriad() {
+        for (int i = 0; i < tz; i++) {
+            asmTriads[i] = new AsmTriad("###", triads[i]);
+        }
+    }
+    
+    void generateDefVar() {
+        Tree *current = root;
+        while (true) {
+            if (current == NULL)
+                break;
+            if (current->node->typeNode != TypeNodeVar) {
+                current = current->left;
+                continue;
+            }
+            cout << current->node->id << " DB 01H DUP(?)";
+            
+            cout << "\n";
+            
+            current = current->left;
+        }
+    }
+    
+    
     
     LL1(TScanner *s) {
         sc = s;
